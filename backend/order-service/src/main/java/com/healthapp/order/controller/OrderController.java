@@ -3,7 +3,7 @@ package com.healthapp.order.controller;
 import com.healthapp.order.dto.OrderResponse;
 import com.healthapp.order.dto.PlaceOrderRequest;
 import com.healthapp.order.dto.TrackingInfo;
-import com.healthapp.order.enums.OrderStatus;
+import com.healthapp.order.domain.enums.OrderStatus;
 import com.healthapp.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

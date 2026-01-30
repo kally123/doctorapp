@@ -49,6 +49,13 @@ public class CartService {
     }
 
     /**
+     * Get cart for user by UUID.
+     */
+    public Mono<CartResponse> getCart(UUID userId) {
+        return getCartResponse(userId.toString());
+    }
+
+    /**
      * Get cart as response DTO.
      */
     public Mono<CartResponse> getCartResponse(String userId) {
@@ -86,6 +93,13 @@ public class CartService {
     }
 
     /**
+     * Add item to cart by UUID.
+     */
+    public Mono<CartResponse> addItem(UUID userId, AddToCartRequest request) {
+        return addItem(userId.toString(), request);
+    }
+
+    /**
      * Update item quantity in cart.
      */
     public Mono<CartResponse> updateQuantity(String userId, String itemId, int quantity) {
@@ -115,6 +129,20 @@ public class CartService {
     }
 
     /**
+     * Remove item from cart by UUID.
+     */
+    public Mono<CartResponse> removeItem(UUID userId, String productId) {
+        return removeItem(userId.toString(), productId);
+    }
+
+    /**
+     * Update item in cart.
+     */
+    public Mono<CartResponse> updateItem(UUID userId, String productId, UpdateCartItemRequest request) {
+        return updateQuantity(userId.toString(), productId, request.getQuantity());
+    }
+
+    /**
      * Apply coupon to cart.
      */
     public Mono<CartResponse> applyCoupon(String userId, String couponCode) {
@@ -132,6 +160,13 @@ public class CartService {
     }
 
     /**
+     * Apply coupon to cart by UUID.
+     */
+    public Mono<CartResponse> applyCoupon(UUID userId, String couponCode) {
+        return applyCoupon(userId.toString(), couponCode);
+    }
+
+    /**
      * Remove coupon from cart.
      */
     public Mono<CartResponse> removeCoupon(String userId) {
@@ -141,6 +176,13 @@ public class CartService {
                 .map(Cart::removeCoupon)
                 .flatMap(cart -> saveCart(userId, cart))
                 .map(this::toCartResponse);
+    }
+
+    /**
+     * Remove coupon from cart by UUID.
+     */
+    public Mono<CartResponse> removeCoupon(UUID userId) {
+        return removeCoupon(userId.toString());
     }
 
     /**
@@ -182,11 +224,60 @@ public class CartService {
     }
 
     /**
+     * Get cart summary without address.
+     */
+    public Mono<CartSummary> getCartSummary(UUID userId) {
+        return getCart(userId.toString())
+                .map(cart -> {
+                    BigDecimal subtotal = cart.getSubtotal();
+                    BigDecimal discount = cart.getDiscountAmount();
+                    BigDecimal deliveryFee = calculateDeliveryFee(subtotal);
+                    BigDecimal tax = calculateTax(subtotal.subtract(discount));
+                    BigDecimal total = subtotal.subtract(discount).add(deliveryFee).add(tax);
+
+                    return CartSummary.builder()
+                            .items(toCartItemResponses(cart.getItems()))
+                            .itemCount(cart.getItemCount())
+                            .totalItems(cart.getTotalItems())
+                            .subtotal(subtotal)
+                            .couponCode(cart.getCouponCode())
+                            .discount(discount)
+                            .deliveryFee(deliveryFee)
+                            .tax(tax)
+                            .total(total)
+                            .estimatedDelivery(Instant.now().plus(Duration.ofDays(2)))
+                            .freeDeliveryEligible(subtotal.compareTo(freeDeliveryThreshold) >= 0)
+                            .amountForFreeDelivery(
+                                subtotal.compareTo(freeDeliveryThreshold) < 0 
+                                    ? freeDeliveryThreshold.subtract(subtotal) 
+                                    : BigDecimal.ZERO)
+                            .build();
+                });
+    }
+
+    /**
+     * Add items from prescription.
+     */
+    public Mono<CartResponse> addFromPrescription(UUID userId, UUID prescriptionId) {
+        log.info("Adding prescription items to cart for user: {}, prescription: {}", userId, prescriptionId);
+        // TODO: Integrate with prescription service to get items
+        // For now, return current cart
+        return getCart(userId);
+    }
+
+    /**
      * Clear cart after order placement.
      */
     public Mono<Void> clearCart(String userId) {
         String key = buildCartKey(userId);
         return cartRedisTemplate.delete(key).then();
+    }
+
+    /**
+     * Clear cart by UUID.
+     */
+    public Mono<Void> clearCart(UUID userId) {
+        return clearCart(userId.toString());
     }
 
     private Mono<Cart> saveCart(String userId, Cart cart) {

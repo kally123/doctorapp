@@ -60,7 +60,7 @@ public class DoctorController {
             @Valid @RequestBody UpdateDoctorRequest request) {
         
         return doctorService.getDoctorByUserId(userId)
-                .flatMap(doctor -> doctorService.updateDoctor(doctor.getId(), request))
+                .flatMap(doctor -> doctorService.updateDoctor(UUID.fromString(doctor.getId()), request))
                 .map(doctor -> ApiResponse.success(doctor, "Profile updated successfully"));
     }
     
@@ -111,7 +111,7 @@ public class DoctorController {
             @RequestHeader("X-User-Id") UUID userId) {
         
         return doctorService.getDoctorByUserId(userId)
-                .flatMap(doctor -> doctorService.toggleAcceptingPatients(doctor.getId()))
+                .flatMap(doctor -> doctorService.toggleAcceptingPatients(UUID.fromString(doctor.getId())))
                 .map(doctor -> ApiResponse.success(doctor, "Availability updated"));
     }
     

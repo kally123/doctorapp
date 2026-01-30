@@ -65,16 +65,19 @@ public class DoctorService {
                     return doctorRepository.save(doctor);
                 })
                 .flatMap(doctor -> {
-                    // Save qualifications
-                    Mono<Void> qualificationsSaved = saveQualifications(doctor.getId(), request.getQualifications());
+                    // Link specializations - convert String IDs to UUIDs
+                    List<UUID> specUuids = request.getSpecializationIds() != null 
+                            ? request.getSpecializationIds().stream().map(UUID::fromString).toList() 
+                            : List.of();
+                    Mono<Void> specializationsSaved = linkSpecializations(doctor.getId(), specUuids, null);
                     
-                    // Link specializations
-                    Mono<Void> specializationsSaved = linkSpecializations(doctor.getId(), request.getSpecializationIds(), request.getPrimarySpecializationId());
+                    // Link languages - convert String IDs to UUIDs  
+                    List<UUID> langUuids = request.getLanguageIds() != null
+                            ? request.getLanguageIds().stream().map(UUID::fromString).toList()
+                            : List.of();
+                    Mono<Void> languagesSaved = linkLanguages(doctor.getId(), langUuids);
                     
-                    // Link languages
-                    Mono<Void> languagesSaved = linkLanguages(doctor.getId(), request.getLanguageIds());
-                    
-                    return Mono.when(qualificationsSaved, specializationsSaved, languagesSaved)
+                    return Mono.when(specializationsSaved, languagesSaved)
                             .then(Mono.just(doctor));
                 })
                 .flatMap(doctor -> 
@@ -223,21 +226,6 @@ public class DoctorService {
                     dto.setClinics(tuple.getT4());
                     return dto;
                 });
-    }
-    
-    private Mono<Void> saveQualifications(UUID doctorId, List<CreateDoctorRequest.QualificationInput> qualifications) {
-        if (qualifications == null || qualifications.isEmpty()) {
-            return Mono.empty();
-        }
-        
-        return Flux.fromIterable(qualifications)
-                .map(input -> {
-                    DoctorQualification qual = doctorMapper.toEntity(input);
-                    qual.setDoctorId(doctorId);
-                    return qual;
-                })
-                .flatMap(qualificationRepository::save)
-                .then();
     }
     
     private Mono<Void> linkSpecializations(UUID doctorId, List<UUID> specializationIds, UUID primaryId) {

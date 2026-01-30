@@ -18,10 +18,8 @@ public interface DoctorMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "isVerified", constant = "false")
     @Mapping(target = "isAcceptingPatients", constant = "true")
-    @Mapping(target = "rating", constant = "0.0")
-    @Mapping(target = "totalReviews", constant = "0")
-    @Mapping(target = "totalConsultations", constant = "0")
-    @Mapping(target = "profileViews", constant = "0")
+    @Mapping(target = "rating", ignore = true)
+    @Mapping(target = "reviewCount", constant = "0")
     Doctor toEntity(CreateDoctorRequest request);
     
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -31,9 +29,7 @@ public interface DoctorMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "isVerified", ignore = true)
     @Mapping(target = "rating", ignore = true)
-    @Mapping(target = "totalReviews", ignore = true)
-    @Mapping(target = "totalConsultations", ignore = true)
-    @Mapping(target = "profileViews", ignore = true)
+    @Mapping(target = "reviewCount", ignore = true)
     Doctor updateEntity(@MappingTarget Doctor doctor, UpdateDoctorRequest request);
     
     @Mapping(target = "specializations", ignore = true)
@@ -50,18 +46,12 @@ public interface DoctorMapper {
     QualificationDto toDto(DoctorQualification qualification);
     List<QualificationDto> toQualificationDtoList(List<DoctorQualification> qualifications);
     
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "doctorId", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    DoctorQualification toEntity(CreateDoctorRequest.QualificationInput input);
-    
     // Language mappings
     LanguageDto toDto(Language language);
     List<LanguageDto> toLanguageDtoList(List<Language> languages);
     
     // Clinic mappings
     @Mapping(target = "isPrimary", ignore = true)
-    @Mapping(target = "consultationFee", source = "consultationFee")
     ClinicDto toDto(Clinic clinic);
     List<ClinicDto> toClinicDtoList(List<Clinic> clinics);
 }

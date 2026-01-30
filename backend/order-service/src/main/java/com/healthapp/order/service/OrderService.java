@@ -133,6 +133,42 @@ public class OrderService {
     }
 
     /**
+     * Get user's orders with pagination.
+     */
+    public Flux<OrderResponse> getUserOrders(UUID userId, int page, int size) {
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .skip((long) page * size)
+                .take(size)
+                .flatMap(order -> getOrderResponse(order.getId()));
+    }
+
+    /**
+     * Get user's orders by status with pagination.
+     */
+    public Flux<OrderResponse> getUserOrdersByStatus(UUID userId, OrderStatus status, int page, int size) {
+        return orderRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, status)
+                .skip((long) page * size)
+                .take(size)
+                .flatMap(order -> getOrderResponse(order.getId()));
+    }
+
+    /**
+     * Get partner's orders with pagination.
+     */
+    public Flux<OrderResponse> getPartnerOrders(UUID partnerId, OrderStatus status, int page, int size) {
+        if (status != null) {
+            return orderRepository.findByPartnerIdAndStatusOrderByCreatedAtDesc(partnerId, status)
+                    .skip((long) page * size)
+                    .take(size)
+                    .flatMap(order -> getOrderResponse(order.getId()));
+        }
+        return orderRepository.findByPartnerIdOrderByCreatedAtDesc(partnerId)
+                .skip((long) page * size)
+                .take(size)
+                .flatMap(order -> getOrderResponse(order.getId()));
+    }
+
+    /**
      * Update order status.
      */
     @Transactional
@@ -171,6 +207,14 @@ public class OrderService {
     }
 
     /**
+     * Update order status without changedByType parameter.
+     */
+    @Transactional
+    public Mono<OrderResponse> updateOrderStatus(UUID orderId, OrderStatus newStatus, String notes) {
+        return updateOrderStatus(orderId, newStatus, "PARTNER", notes);
+    }
+
+    /**
      * Confirm payment for order.
      */
     @Transactional
@@ -199,6 +243,15 @@ public class OrderService {
     }
 
     /**
+     * Confirm payment for order with paymentId and transactionId.
+     */
+    @Transactional
+    public Mono<OrderResponse> confirmPayment(UUID orderId, String paymentId, String transactionId) {
+        log.info("Confirming payment for order: {}, payment: {}, transaction: {}", orderId, paymentId, transactionId);
+        return confirmPayment(orderId, UUID.fromString(paymentId));
+    }
+
+    /**
      * Cancel order.
      */
     @Transactional
@@ -207,6 +260,20 @@ public class OrderService {
 
         return orderRepository.findById(orderId)
                 .filter(order -> order.getUserId().equals(userId))
+                .filter(order -> canCancel(order.getStatus()))
+                .switchIfEmpty(Mono.error(new IllegalStateException("Order cannot be cancelled")))
+                .flatMap(order -> updateOrderStatus(orderId, OrderStatus.CANCELLED, "CUSTOMER", reason))
+                .doOnSuccess(response -> eventPublisher.publishOrderCancelled(response));
+    }
+
+    /**
+     * Cancel order without userId check.
+     */
+    @Transactional
+    public Mono<OrderResponse> cancelOrder(UUID orderId, String reason) {
+        log.info("Cancelling order: {}", orderId);
+
+        return orderRepository.findById(orderId)
                 .filter(order -> canCancel(order.getStatus()))
                 .switchIfEmpty(Mono.error(new IllegalStateException("Order cannot be cancelled")))
                 .flatMap(order -> updateOrderStatus(orderId, OrderStatus.CANCELLED, "CUSTOMER", reason))

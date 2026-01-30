@@ -24,7 +24,11 @@ public interface OrderRepository extends R2dbcRepository<Order, UUID> {
 
     Flux<Order> findByUserIdAndStatus(UUID userId, OrderStatus status);
 
+    Flux<Order> findByUserIdAndStatusOrderByCreatedAtDesc(UUID userId, OrderStatus status);
+
     Flux<Order> findByPartnerIdAndStatus(UUID partnerId, OrderStatus status);
+
+    Flux<Order> findByPartnerIdAndStatusOrderByCreatedAtDesc(UUID partnerId, OrderStatus status);
 
     @Query("SELECT * FROM orders WHERE user_id = :userId AND status NOT IN ('CART', 'CANCELLED', 'REFUNDED') ORDER BY created_at DESC LIMIT :limit")
     Flux<Order> findRecentOrdersByUserId(UUID userId, int limit);

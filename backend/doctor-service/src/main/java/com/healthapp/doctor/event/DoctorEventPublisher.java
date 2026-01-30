@@ -9,6 +9,7 @@ import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 
@@ -69,17 +70,19 @@ public class DoctorEventPublisher {
     private BaseEvent createEvent(String eventType, Doctor doctor) {
         return BaseEvent.builder()
                 .eventType(eventType)
-                .aggregateId(doctor.getId().toString())
-                .aggregateType("Doctor")
                 .correlationId(UUID.randomUUID().toString())
-                .payload(Map.of(
+                .metadata(Map.of(
+                        "aggregateId", doctor.getId().toString(),
+                        "aggregateType", "Doctor"
+                ))
+                .data(Map.of(
                         "doctorId", doctor.getId().toString(),
                         "userId", doctor.getUserId().toString(),
-                        "name", doctor.getFirstName() + " " + doctor.getLastName(),
+                        "name", doctor.getFullName(),
                         "isVerified", doctor.getIsVerified(),
                         "isAcceptingPatients", doctor.getIsAcceptingPatients(),
                         "rating", doctor.getRating(),
-                        "consultationFee", doctor.getConsultationFee()
+                        "consultationFee", doctor.getConsultationFee() != null ? doctor.getConsultationFee() : BigDecimal.ZERO
                 ))
                 .build();
     }

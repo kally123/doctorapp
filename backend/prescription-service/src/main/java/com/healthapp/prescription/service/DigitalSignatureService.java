@@ -37,23 +37,24 @@ public class DigitalSignatureService {
     ) {
         this.testMode = testMode;
         
+        PrivateKey tempKey = null;
+        X509Certificate tempCert = null;
+        String tempSerial = "TEST-CERT-001";
+        
         if (!testMode && keyStorePath != null && !keyStorePath.isEmpty()) {
             try {
                 KeyStore keyStore = loadKeyStore(keyStorePath, keyStorePassword);
-                this.signingKey = (PrivateKey) keyStore.getKey(keyAlias, keyStorePassword.toCharArray());
-                this.signingCertificate = (X509Certificate) keyStore.getCertificate(keyAlias);
-                this.certificateSerial = signingCertificate.getSerialNumber().toString();
+                tempKey = (PrivateKey) keyStore.getKey(keyAlias, keyStorePassword.toCharArray());
+                tempCert = (X509Certificate) keyStore.getCertificate(keyAlias);
+                tempSerial = tempCert.getSerialNumber().toString();
             } catch (Exception e) {
                 log.error("Failed to load signing certificate, falling back to test mode", e);
-                this.signingKey = null;
-                this.signingCertificate = null;
-                this.certificateSerial = "TEST-CERT-001";
             }
-        } else {
-            this.signingKey = null;
-            this.signingCertificate = null;
-            this.certificateSerial = "TEST-CERT-001";
         }
+        
+        this.signingKey = tempKey;
+        this.signingCertificate = tempCert;
+        this.certificateSerial = tempSerial;
     }
 
     private KeyStore loadKeyStore(String path, String password) throws Exception {

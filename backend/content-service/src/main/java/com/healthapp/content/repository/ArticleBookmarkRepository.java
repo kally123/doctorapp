@@ -19,4 +19,6 @@ public interface ArticleBookmarkRepository extends ReactiveMongoRepository<Artic
     Flux<ArticleBookmark> findByUserIdOrderByCreatedAtDesc(String userId, Pageable pageable);
 
     Mono<Long> countByUserId(String userId);
+    
+    Mono<Long> countByArticleId(String articleId);
 }

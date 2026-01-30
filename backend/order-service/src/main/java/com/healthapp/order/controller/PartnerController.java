@@ -1,7 +1,7 @@
 package com.healthapp.order.controller;
 
 import com.healthapp.order.domain.Partner;
-import com.healthapp.order.enums.PartnerType;
+import com.healthapp.order.domain.enums.PartnerType;
 import com.healthapp.order.repository.PartnerRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

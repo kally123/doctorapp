@@ -91,6 +91,13 @@ public class AddressService {
     }
 
     /**
+     * Alias for createAddress for compatibility.
+     */
+    public Mono<AddressResponse> addAddress(UUID userId, AddressRequest request) {
+        return createAddress(userId, request);
+    }
+
+    /**
      * Update an existing address.
      */
     public Mono<AddressResponse> updateAddress(UUID addressId, AddressRequest request) {

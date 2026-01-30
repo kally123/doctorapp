@@ -21,6 +21,12 @@ public interface LabBookingRepository extends R2dbcRepository<LabBooking, UUID> 
 
     Flux<LabBooking> findByUserIdOrderByCreatedAtDesc(UUID userId);
 
+    Flux<LabBooking> findByUserIdAndStatusOrderByCreatedAtDesc(UUID userId, LabBookingStatus status);
+
+    Flux<LabBooking> findByLabPartnerIdOrderByCreatedAtDesc(UUID labPartnerId);
+
+    Flux<LabBooking> findByLabPartnerIdAndStatusOrderByCreatedAtDesc(UUID labPartnerId, LabBookingStatus status);
+
     Flux<LabBooking> findByLabPartnerIdOrderByScheduledDateAsc(UUID labPartnerId);
 
     Flux<LabBooking> findByLabPartnerIdAndStatus(UUID labPartnerId, LabBookingStatus status);

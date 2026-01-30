@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>com.healthapp</groupId>
-        <artifactId>doctor-app-backend</artifactId>
+        <artifactId>healthcare-platform</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
@@ -65,11 +65,10 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
 
-        <!-- Common module -->
+        <!-- Healthcare Common module -->
         <dependency>
             <groupId>com.healthapp</groupId>
-            <artifactId>common</artifactId>
-            <version>${project.version}</version>
+            <artifactId>healthcare-common</artifactId>
         </dependency>
 
         <!-- Lombok -->

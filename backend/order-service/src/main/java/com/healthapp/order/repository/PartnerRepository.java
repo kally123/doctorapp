@@ -19,6 +19,8 @@ public interface PartnerRepository extends R2dbcRepository<Partner, UUID> {
 
     Flux<Partner> findByPartnerTypeAndIsActiveTrue(PartnerType partnerType);
 
+    Flux<Partner> findByPartnerTypeAndCityAndIsActiveTrue(PartnerType partnerType, String city);
+
     Flux<Partner> findByPartnerTypeAndIsActiveTrueAndIsVerifiedTrue(PartnerType partnerType);
 
     Mono<Partner> findByApiKeyHash(String apiKeyHash);
@@ -61,4 +63,28 @@ public interface PartnerRepository extends R2dbcRepository<Partner, UUID> {
         ORDER BY rating DESC
         """)
     Flux<Partner> findLabsServicingPincode(String pincode);
+
+    @Query("""
+        SELECT * FROM partners 
+        WHERE partner_type = :partnerType::text::partner_type
+        AND is_active = true 
+        AND is_verified = true
+        ORDER BY rating DESC
+        LIMIT :limit
+        """)
+    Flux<Partner> findNearbyPartners(PartnerType partnerType, double latitude, double longitude, double radiusKm, int limit);
+
+    /**
+     * Alias for findByPartnerTypeAndIsActiveTrue for compatibility.
+     */
+    default Flux<Partner> findByTypeAndIsActiveTrue(PartnerType partnerType) {
+        return findByPartnerTypeAndIsActiveTrue(partnerType);
+    }
+
+    /**
+     * Alias for findByPartnerTypeAndCityAndIsActiveTrue for compatibility.
+     */
+    default Flux<Partner> findByTypeAndCityAndIsActiveTrue(PartnerType partnerType, String city) {
+        return findByPartnerTypeAndCityAndIsActiveTrue(partnerType, city);
+    }
 }

@@ -80,4 +80,31 @@ public class BaseEvent<T> {
                 .correlationId(correlationId)
                 .build();
     }
+    
+    /**
+     * Alias for getData() for backward compatibility.
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getPayload() {
+        if (data instanceof Map) {
+            return (Map<String, Object>) data;
+        }
+        return Map.of();
+    }
+    
+    /**
+     * Get aggregate ID from metadata or data.
+     */
+    public String getAggregateId() {
+        if (metadata != null && metadata.containsKey("aggregateId")) {
+            return metadata.get("aggregateId");
+        }
+        if (data instanceof Map) {
+            Object id = ((Map<?, ?>) data).get("id");
+            if (id != null) return id.toString();
+            id = ((Map<?, ?>) data).get("doctorId");
+            if (id != null) return id.toString();
+        }
+        return eventId;
+    }
 }

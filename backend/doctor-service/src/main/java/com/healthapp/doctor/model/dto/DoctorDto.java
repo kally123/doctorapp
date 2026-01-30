@@ -1,7 +1,9 @@
 package com.healthapp.doctor.model.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -10,8 +12,10 @@ import java.util.List;
 /**
  * DTO for doctor profile information.
  */
-@Value
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DoctorDto {
     String id;
     String userId;

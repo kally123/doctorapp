@@ -64,6 +64,24 @@ public class LabBookingService {
     }
 
     /**
+     * Search lab tests with pagination.
+     */
+    public Flux<LabTestResponse> searchLabTests(String keyword, int page, int size) {
+        return testRepository.searchTests(keyword, size)
+                .skip((long) page * size)
+                .take(size)
+                .map(this::toLabTestResponse);
+    }
+
+    /**
+     * Get lab test by ID.
+     */
+    public Mono<LabTestResponse> getLabTest(UUID testId) {
+        return testRepository.findById(testId)
+                .map(this::toLabTestResponse);
+    }
+
+    /**
      * Get popular tests.
      */
     public Flux<LabTestResponse> getPopularTests() {
@@ -72,10 +90,29 @@ public class LabBookingService {
     }
 
     /**
+     * Get popular tests with limit.
+     */
+    public Flux<LabTestResponse> getPopularTests(int limit) {
+        return testRepository.findByIsPopularTrueAndIsActiveTrue()
+                .take(limit)
+                .map(this::toLabTestResponse);
+    }
+
+    /**
      * Get tests by category.
      */
     public Flux<LabTestResponse> getTestsByCategory(UUID categoryId) {
         return testRepository.findByCategoryIdAndIsActiveTrue(categoryId)
+                .map(this::toLabTestResponse);
+    }
+
+    /**
+     * Get tests by category with pagination.
+     */
+    public Flux<LabTestResponse> getTestsByCategory(UUID categoryId, int page, int size) {
+        return testRepository.findByCategoryIdAndIsActiveTrue(categoryId)
+                .skip((long) page * size)
+                .take(size)
                 .map(this::toLabTestResponse);
     }
 
@@ -96,11 +133,45 @@ public class LabBookingService {
     }
 
     /**
+     * Get all test packages with pagination.
+     */
+    public Flux<TestPackageResponse> getTestPackages(int page, int size) {
+        return packageRepository.findByIsActiveTrueOrderByDisplayOrderAsc()
+                .skip((long) page * size)
+                .take(size)
+                .flatMap(this::toTestPackageResponse);
+    }
+
+    /**
+     * Get test package by ID.
+     */
+    public Mono<TestPackageResponse> getTestPackage(UUID packageId) {
+        return packageRepository.findById(packageId)
+                .flatMap(this::toTestPackageResponse);
+    }
+
+    /**
      * Get popular packages.
      */
     public Flux<TestPackageResponse> getPopularPackages() {
         return packageRepository.findByIsPopularTrueAndIsActiveTrue()
                 .flatMap(this::toTestPackageResponse);
+    }
+
+    /**
+     * Get popular packages with limit.
+     */
+    public Flux<TestPackageResponse> getPopularPackages(int limit) {
+        return packageRepository.findByIsPopularTrueAndIsActiveTrue()
+                .take(limit)
+                .flatMap(this::toTestPackageResponse);
+    }
+
+    /**
+     * Get available collection slots (overloaded for controller).
+     */
+    public Flux<AvailableSlotResponse> getAvailableSlots(UUID labPartnerId, LocalDate date, String pincode) {
+        return getAvailableSlots(pincode, date, date.plusDays(1));
     }
 
     /**
@@ -195,6 +266,50 @@ public class LabBookingService {
     }
 
     /**
+     * Get user's bookings with pagination.
+     */
+    public Flux<LabBookingResponse> getUserBookings(UUID userId, int page, int size) {
+        return bookingRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .skip((long) page * size)
+                .take(size)
+                .flatMap(booking -> getBookingResponse(booking.getId()));
+    }
+
+    /**
+     * Get user's bookings by status with pagination.
+     */
+    public Flux<LabBookingResponse> getUserBookingsByStatus(UUID userId, LabBookingStatus status, int page, int size) {
+        return bookingRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, status)
+                .skip((long) page * size)
+                .take(size)
+                .flatMap(booking -> getBookingResponse(booking.getId()));
+    }
+
+    /**
+     * Get booking by booking number.
+     */
+    public Mono<LabBookingResponse> getBookingByNumber(String bookingNumber) {
+        return bookingRepository.findByBookingNumber(bookingNumber)
+                .flatMap(booking -> getBookingResponse(booking.getId()));
+    }
+
+    /**
+     * Get partner's bookings with pagination.
+     */
+    public Flux<LabBookingResponse> getPartnerBookings(UUID partnerId, LabBookingStatus status, int page, int size) {
+        if (status != null) {
+            return bookingRepository.findByLabPartnerIdAndStatusOrderByCreatedAtDesc(partnerId, status)
+                    .skip((long) page * size)
+                    .take(size)
+                    .flatMap(booking -> getBookingResponse(booking.getId()));
+        }
+        return bookingRepository.findByLabPartnerIdOrderByCreatedAtDesc(partnerId)
+                .skip((long) page * size)
+                .take(size)
+                .flatMap(booking -> getBookingResponse(booking.getId()));
+    }
+
+    /**
      * Confirm payment for booking.
      */
     @Transactional
@@ -212,6 +327,15 @@ public class LabBookingService {
                 })
                 .flatMap(booking -> getBookingResponse(booking.getId()))
                 .doOnSuccess(response -> eventPublisher.publishBookingConfirmed(response));
+    }
+
+    /**
+     * Confirm payment for booking with paymentId and transactionId strings.
+     */
+    @Transactional
+    public Mono<LabBookingResponse> confirmPayment(UUID bookingId, String paymentId, String transactionId) {
+        log.info("Confirming payment for booking: {}, payment: {}, transaction: {}", bookingId, paymentId, transactionId);
+        return confirmPayment(bookingId, UUID.fromString(paymentId));
     }
 
     /**
@@ -234,6 +358,78 @@ public class LabBookingService {
                 })
                 .flatMap(booking -> getBookingResponse(booking.getId()))
                 .doOnSuccess(response -> eventPublisher.publishBookingCancelled(response));
+    }
+
+    /**
+     * Cancel booking without userId check.
+     */
+    @Transactional
+    public Mono<LabBookingResponse> cancelBooking(UUID bookingId, String reason) {
+        log.info("Cancelling booking: {}", bookingId);
+
+        return bookingRepository.findById(bookingId)
+                .filter(booking -> canCancel(booking.getStatus()))
+                .switchIfEmpty(Mono.error(new IllegalStateException("Booking cannot be cancelled")))
+                .flatMap(booking -> {
+                    booking.setStatus(LabBookingStatus.CANCELLED);
+                    booking.setCancelledAt(Instant.now());
+                    booking.setCancellationReason(reason);
+                    booking.setUpdatedAt(Instant.now());
+                    return bookingRepository.save(booking);
+                })
+                .flatMap(booking -> getBookingResponse(booking.getId()))
+                .doOnSuccess(response -> eventPublisher.publishBookingCancelled(response));
+    }
+
+    /**
+     * Reschedule booking.
+     */
+    @Transactional
+    public Mono<LabBookingResponse> rescheduleBooking(UUID bookingId, LocalDate newDate, UUID newSlotId) {
+        log.info("Rescheduling booking: {} to date: {}", bookingId, newDate);
+
+        return bookingRepository.findById(bookingId)
+                .filter(booking -> canReschedule(booking.getStatus()))
+                .switchIfEmpty(Mono.error(new IllegalStateException("Booking cannot be rescheduled")))
+                .flatMap(booking -> {
+                    booking.setScheduledDate(newDate);
+                    booking.setUpdatedAt(Instant.now());
+                    return bookingRepository.save(booking);
+                })
+                .flatMap(booking -> getBookingResponse(booking.getId()));
+    }
+
+    /**
+     * Assign phlebotomist to booking.
+     */
+    @Transactional
+    public Mono<LabBookingResponse> assignPhlebotomist(UUID bookingId, UUID phlebotomistId) {
+        log.info("Assigning phlebotomist: {} to booking: {}", phlebotomistId, bookingId);
+
+        return bookingRepository.findById(bookingId)
+                .flatMap(booking -> {
+                    booking.setPhlebotomistId(phlebotomistId);
+                    booking.setUpdatedAt(Instant.now());
+                    return bookingRepository.save(booking);
+                })
+                .flatMap(booking -> getBookingResponse(booking.getId()));
+    }
+
+    /**
+     * Upload lab report with FilePart.
+     */
+    @Transactional
+    public Mono<LabBookingResponse> uploadReport(UUID bookingId, org.springframework.http.codec.multipart.FilePart file) {
+        log.info("Uploading report for booking: {}", bookingId);
+        // TODO: Upload file to storage and get URL
+        String reportUrl = "/reports/" + bookingId + "/" + file.filename();
+        UUID reportDocumentId = UUID.randomUUID();
+        return uploadReport(bookingId, reportUrl, reportDocumentId);
+    }
+
+    private boolean canReschedule(LabBookingStatus status) {
+        return status == LabBookingStatus.PENDING 
+            || status == LabBookingStatus.CONFIRMED;
     }
 
     /**

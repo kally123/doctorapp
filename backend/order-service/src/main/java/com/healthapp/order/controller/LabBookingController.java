@@ -1,7 +1,7 @@
 package com.healthapp.order.controller;
 
 import com.healthapp.order.dto.*;
-import com.healthapp.order.enums.LabBookingStatus;
+import com.healthapp.order.domain.enums.LabBookingStatus;
 import com.healthapp.order.service.LabBookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
