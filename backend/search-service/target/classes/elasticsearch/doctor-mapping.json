@@ -1,0 +1,79 @@
+{
+  "properties": {
+    "id": { "type": "keyword" },
+    "userId": { "type": "keyword" },
+    "fullName": {
+      "type": "text",
+      "analyzer": "standard",
+      "fields": {
+        "keyword": { "type": "keyword" },
+        "autocomplete": {
+          "type": "text",
+          "analyzer": "autocomplete",
+          "search_analyzer": "autocomplete_search"
+        }
+      }
+    },
+    "firstName": { "type": "text" },
+    "lastName": { "type": "text" },
+    "title": { "type": "keyword" },
+    "bio": { "type": "text", "analyzer": "standard" },
+    "profilePhotoUrl": { "type": "keyword", "index": false },
+    "specializations": {
+      "type": "nested",
+      "properties": {
+        "id": { "type": "keyword" },
+        "name": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
+        "isPrimary": { "type": "boolean" }
+      }
+    },
+    "primarySpecialization": {
+      "type": "text",
+      "fields": { "keyword": { "type": "keyword" } }
+    },
+    "primarySpecializationId": { "type": "keyword" },
+    "qualifications": {
+      "type": "nested",
+      "properties": {
+        "degree": { "type": "keyword" },
+        "institution": { "type": "text" },
+        "year": { "type": "integer" }
+      }
+    },
+    "languages": { "type": "keyword" },
+    "clinics": {
+      "type": "nested",
+      "properties": {
+        "id": { "type": "keyword" },
+        "name": { "type": "text" },
+        "address": { "type": "text" },
+        "city": { "type": "keyword" },
+        "state": { "type": "keyword" },
+        "pincode": { "type": "keyword" },
+        "location": { "type": "geo_point" },
+        "isPrimary": { "type": "boolean" },
+        "consultationFee": { "type": "double" }
+      }
+    },
+    "cities": { "type": "keyword" },
+    "primaryLocation": { "type": "geo_point" },
+    "experienceYears": { "type": "integer" },
+    "registrationNumber": { "type": "keyword" },
+    "consultationFee": { "type": "double" },
+    "videoConsultationFee": { "type": "double" },
+    "rating": { "type": "double" },
+    "totalReviews": { "type": "integer" },
+    "totalConsultations": { "type": "integer" },
+    "profileViews": { "type": "integer" },
+    "isVerified": { "type": "boolean" },
+    "isAcceptingPatients": { "type": "boolean" },
+    "offersVideoConsultation": { "type": "boolean" },
+    "offersInPersonConsultation": { "type": "boolean" },
+    "createdAt": { "type": "date", "format": "epoch_millis" },
+    "updatedAt": { "type": "date", "format": "epoch_millis" },
+    "popularityScore": { "type": "double" }
+  }
+}

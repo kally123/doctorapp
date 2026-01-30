@@ -1,0 +1,100 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: consultation-service
+  
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/consultation_db
+    username: healthcare_admin
+    password: healthcare_password
+    pool:
+      initial-size: 5
+      max-size: 20
+      max-idle-time: 30m
+  
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/consultation_db
+    user: healthcare_admin
+    password: healthcare_password
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/consultation_chat
+      auto-index-creation: true
+    redis:
+      host: localhost
+      port: 6379
+      password: redis_password
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: consultation-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+# Twilio Configuration
+twilio:
+  account-sid: ${TWILIO_ACCOUNT_SID:test_account_sid}
+  api-key-sid: ${TWILIO_API_KEY_SID:test_api_key_sid}
+  api-key-secret: ${TWILIO_API_KEY_SECRET:test_api_key_secret}
+  video:
+    room-type: group  # 'group' or 'peer-to-peer'
+    max-participants: 2
+    record-participants-on-connect: false
+    status-callback-url: ${TWILIO_STATUS_CALLBACK_URL:}
+
+# Consultation Settings
+consultation:
+  session:
+    max-duration-minutes: 60
+    auto-end-timeout-minutes: 5
+    waiting-room-timeout-minutes: 15
+  token:
+    ttl-seconds: 3600
+  recording:
+    enabled: false
+    storage-bucket: ${RECORDING_S3_BUCKET:healthcare-recordings}
+
+# Kafka Topics
+kafka:
+  topics:
+    consultation-events: consultation-events
+    appointment-events: appointment-events
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# Logging
+logging:
+  level:
+    com.healthapp.consultation: DEBUG
+    org.springframework.web.socket: DEBUG
+    org.springframework.messaging: DEBUG
+
+# SpringDoc
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html

@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: doctor-service
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  # R2DBC Configuration
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:healthapp_doctors}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    pool:
+      initial-size: 5
+      max-size: 20
+      max-idle-time: 30m
+
+  # Flyway Configuration (uses JDBC)
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:healthapp_doctors}
+    user: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  # Redis Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 5000ms
+
+  # Kafka Configuration
+  kafka:
+    enabled: ${KAFKA_ENABLED:true}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      client-id: doctor-service-producer
+      acks: all
+      retries: 3
+
+# JWT Configuration (for token validation if needed)
+jwt:
+  secret: ${JWT_SECRET:your-256-bit-secret-key-for-jwt-signing-must-be-at-least-32-chars}
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8082}
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+# Logging
+logging:
+  level:
+    com.healthapp: DEBUG
+    org.springframework.r2dbc: DEBUG

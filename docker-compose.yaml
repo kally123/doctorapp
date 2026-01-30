@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_USER: healthcare_admin
       POSTGRES_PASSWORD: healthcare_password
-      POSTGRES_MULTIPLE_DATABASES: user_db,doctor_db,appointment_db,payment_db,notification_db
+      POSTGRES_MULTIPLE_DATABASES: user_db,doctor_db,appointment_db,payment_db,notification_db,consultation_db
     ports:
       - "5432:5432"
     volumes:
@@ -77,6 +77,25 @@ services:
       test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092"]
       interval: 30s
       timeout: 10s
+      retries: 5
+    networks:
+      - healthcare-network
+
+  mongodb:
+    image: mongo:7.0
+    container_name: healthcare-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: mongo_password
+      MONGO_INITDB_DATABASE: consultation_chat
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
       retries: 5
     networks:
       - healthcare-network
@@ -272,6 +291,41 @@ services:
     networks:
       - healthcare-network
 
+  consultation-service:
+    build:
+      context: ./backend
+      dockerfile: consultation-service/Dockerfile
+    container_name: healthcare-consultation-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/consultation_db
+      SPRING_R2DBC_USERNAME: healthcare_admin
+      SPRING_R2DBC_PASSWORD: healthcare_password
+      SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/consultation_db
+      SPRING_FLYWAY_USER: healthcare_admin
+      SPRING_FLYWAY_PASSWORD: healthcare_password
+      SPRING_DATA_MONGODB_URI: mongodb://admin:mongo_password@mongodb:27017/consultation_chat?authSource=admin
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: redis_password
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-test_account_sid}
+      TWILIO_API_KEY_SID: ${TWILIO_API_KEY_SID:-test_api_key_sid}
+      TWILIO_API_KEY_SECRET: ${TWILIO_API_KEY_SECRET:-test_api_key_secret}
+    ports:
+      - "8087:8087"
+    networks:
+      - healthcare-network
+
   api-gateway:
     build:
       context: ./backend
@@ -284,6 +338,7 @@ services:
       - appointment-service
       - payment-service
       - notification-service
+      - consultation-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATA_REDIS_HOST: redis
@@ -294,6 +349,7 @@ services:
       SEARCH_SERVICE_URL: http://search-service:8080
       APPOINTMENT_SERVICE_URL: http://appointment-service:8084
       PAYMENT_SERVICE_URL: http://payment-service:8085
+      CONSULTATION_SERVICE_URL: http://consultation-service:8087
       NOTIFICATION_SERVICE_URL: http://notification-service:8086
       JWT_SECRET: your-256-bit-secret-key-for-jwt-signing-here
       ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
@@ -338,6 +394,7 @@ volumes:
   zookeeper_log:
   kafka_data:
   elasticsearch_data:
+  mongodb_data:
 
 networks:
   healthcare-network:
