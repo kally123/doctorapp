@@ -12,8 +12,8 @@ COPY pom.xml .
 COPY healthcare-common/pom.xml healthcare-common/
 COPY user-service/pom.xml user-service/
 
-# Download dependencies
-RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
+# Download dependencies (fix line endings for Alpine)
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && ./mvnw dependency:go-offline -B
 
 # Copy source code
 COPY healthcare-common/src healthcare-common/src

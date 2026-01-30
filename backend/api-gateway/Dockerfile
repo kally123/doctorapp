@@ -11,8 +11,8 @@ COPY .mvn .mvn
 COPY pom.xml .
 COPY api-gateway/pom.xml api-gateway/
 
-# Download dependencies
-RUN chmod +x mvnw && ./mvnw dependency:go-offline -B -pl api-gateway
+# Download dependencies (fix line endings for Alpine)
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && ./mvnw dependency:go-offline -B -pl api-gateway
 
 # Copy source code
 COPY api-gateway/src api-gateway/src

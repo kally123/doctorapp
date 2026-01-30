@@ -10,8 +10,8 @@ COPY pom.xml .
 COPY healthcare-common/pom.xml healthcare-common/
 COPY doctor-service/pom.xml doctor-service/
 
-# Download dependencies (cached layer)
-RUN chmod +x mvnw && \
+# Download dependencies (fix line endings for Alpine)
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && \
     ./mvnw dependency:go-offline -pl doctor-service -am -B
 
 # Copy source code

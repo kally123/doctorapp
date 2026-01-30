@@ -1,0 +1,40 @@
+#!/bin/sh
+# ----------------------------------------------------------------------------
+# Licensed to the Apache Software Foundation (ASF)
+# Maven Wrapper startup script
+# ----------------------------------------------------------------------------
+
+set -e
+
+if [ -z "$JAVA_HOME" ]; then
+  JAVACMD=$(command -v java)
+else
+  JAVACMD="$JAVA_HOME/bin/java"
+fi
+
+if [ ! -x "$JAVACMD" ]; then
+  echo "Error: JAVA_HOME is not set and java is not available." >&2
+  exit 1
+fi
+
+MAVEN_PROJECTBASEDIR="${MAVEN_BASEDIR:-$(cd "$(dirname "$0")" && pwd)}"
+WRAPPER_JAR="$MAVEN_PROJECTBASEDIR/.mvn/wrapper/maven-wrapper.jar"
+WRAPPER_URL="https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.2.0/maven-wrapper-3.2.0.jar"
+
+if [ ! -f "$WRAPPER_JAR" ]; then
+  mkdir -p "$(dirname "$WRAPPER_JAR")"
+  if command -v curl > /dev/null 2>&1; then
+    curl -sL -o "$WRAPPER_JAR" "$WRAPPER_URL"
+  elif command -v wget > /dev/null 2>&1; then
+    wget -q -O "$WRAPPER_JAR" "$WRAPPER_URL"
+  else
+    echo "Error: curl or wget required to download maven-wrapper.jar" >&2
+    exit 1
+  fi
+fi
+
+exec "$JAVACMD" \
+  ${MAVEN_OPTS:--Xmx128m} \
+  -classpath "$WRAPPER_JAR" \
+  org.apache.maven.wrapper.MavenWrapperMain \
+  "$@"

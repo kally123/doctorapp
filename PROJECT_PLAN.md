@@ -665,7 +665,9 @@
 | UAT completed | End of Week 26 | ⬜ |
 | **PLATFORM LAUNCH READY** | End of Week 26 | ⬜ |
 
----
+---cd backend
+mvn clean package -DskipTestscd backend
+mvn clean package -DskipTests
 
 ## Sprint Planning Template
 

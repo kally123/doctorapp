@@ -104,8 +104,8 @@ services:
   # Application Services
   user-service:
     build:
-      context: ./backend/user-service
-      dockerfile: Dockerfile
+      context: ./backend
+      dockerfile: user-service/Dockerfile
     container_name: healthcare-user-service
     depends_on:
       postgres:
@@ -137,8 +137,8 @@ services:
 
   doctor-service:
     build:
-      context: ./backend/doctor-service
-      dockerfile: Dockerfile
+      context: ./backend
+      dockerfile: doctor-service/Dockerfile
     container_name: healthcare-doctor-service
     depends_on:
       postgres:
@@ -166,8 +166,8 @@ services:
 
   search-service:
     build:
-      context: ./backend/search-service
-      dockerfile: Dockerfile
+      context: ./backend
+      dockerfile: search-service/Dockerfile
     container_name: healthcare-search-service
     depends_on:
       elasticsearch:
@@ -190,8 +190,8 @@ services:
 
   api-gateway:
     build:
-      context: ./backend/api-gateway
-      dockerfile: Dockerfile
+      context: ./backend
+      dockerfile: api-gateway/Dockerfile
     container_name: healthcare-api-gateway
     depends_on:
       - user-service
