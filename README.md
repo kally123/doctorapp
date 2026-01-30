@@ -250,44 +250,40 @@ doctorApp/
 
 2. **Start infrastructure services**
    ```bash
-   docker-compose -f infrastructure/docker/docker-compose.dev.yml up -d
+   docker-compose up -d postgres redis zookeeper kafka elasticsearch
    ```
-   This starts PostgreSQL, MongoDB, Redis, Kafka, and Elasticsearch.
+   This starts PostgreSQL, Redis, Kafka, Zookeeper, and Elasticsearch.
 
-3. **Configure environment variables**
+3. **Build backend services** (requires network connectivity to Maven Central)
    ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
+   cd backend
+   ./mvnw clean package -DskipTests
    ```
 
-4. **Start backend services**
+4. **Start all services**
    ```bash
-   # Using Gradle
-   ./gradlew bootRun
-   
-   # Or start individual services
-   cd services/user-service
-   ./gradlew bootRun
+   docker-compose up -d
    ```
 
-5. **Start frontend applications**
-   ```bash
-   # Patient Web App
-   cd frontend/patient-web
-   npm install
-   npm run dev
-   
-   # Doctor Dashboard
-   cd frontend/doctor-dashboard
-   npm install
-   npm run dev
-   ```
-
-6. **Access the applications**
-   - Patient Web: http://localhost:3000
-   - Doctor Dashboard: http://localhost:3001
+5. **Access the applications**
    - API Gateway: http://localhost:8080
-   - API Docs: http://localhost:8080/swagger-ui.html
+   - Patient Web App: http://localhost:3000
+   - Doctor Dashboard: http://localhost:5173
+   - PostgreSQL: localhost:5432
+   - Redis: localhost:6379
+   - Kafka: localhost:29092
+   - Elasticsearch: http://localhost:9200
+
+### Phase 1 Implementation Status
+
+| Component | Status |
+|-----------|--------|
+| Backend Services | ✅ Complete |
+| Frontend Apps | ✅ Complete |
+| Kubernetes Manifests | ✅ Complete |
+| CI/CD Pipelines | ✅ Complete |
+
+See [PHASE1_IMPLEMENTATION_STATUS.md](PHASE1_IMPLEMENTATION_STATUS.md) for details.
 
 ---
 

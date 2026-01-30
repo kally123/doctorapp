@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_USER: healthcare_admin
       POSTGRES_PASSWORD: healthcare_password
-      POSTGRES_MULTIPLE_DATABASES: user_db,doctor_db,appointment_db
+      POSTGRES_MULTIPLE_DATABASES: user_db,doctor_db,appointment_db,payment_db,notification_db
     ports:
       - "5432:5432"
     volumes:
@@ -188,6 +188,90 @@ services:
     networks:
       - healthcare-network
 
+  appointment-service:
+    build:
+      context: ./backend
+      dockerfile: appointment-service/Dockerfile
+    container_name: healthcare-appointment-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/appointment_db
+      SPRING_R2DBC_USERNAME: healthcare_admin
+      SPRING_R2DBC_PASSWORD: healthcare_password
+      SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/appointment_db
+      SPRING_FLYWAY_USER: healthcare_admin
+      SPRING_FLYWAY_PASSWORD: healthcare_password
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: redis_password
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8084:8084"
+    networks:
+      - healthcare-network
+
+  payment-service:
+    build:
+      context: ./backend
+      dockerfile: payment-service/Dockerfile
+    container_name: healthcare-payment-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/payment_db
+      SPRING_R2DBC_USERNAME: healthcare_admin
+      SPRING_R2DBC_PASSWORD: healthcare_password
+      SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/payment_db
+      SPRING_FLYWAY_USER: healthcare_admin
+      SPRING_FLYWAY_PASSWORD: healthcare_password
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-test_key}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-test_secret}
+      RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET:-test_webhook_secret}
+    ports:
+      - "8085:8085"
+    networks:
+      - healthcare-network
+
+  notification-service:
+    build:
+      context: ./backend
+      dockerfile: notification-service/Dockerfile
+    container_name: healthcare-notification-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/notification_db
+      SPRING_R2DBC_USERNAME: healthcare_admin
+      SPRING_R2DBC_PASSWORD: healthcare_password
+      SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/notification_db
+      SPRING_FLYWAY_USER: healthcare_admin
+      SPRING_FLYWAY_PASSWORD: healthcare_password
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_MAIL_HOST: ${MAIL_HOST:-mailhog}
+      SPRING_MAIL_PORT: ${MAIL_PORT:-1025}
+      SPRING_MAIL_USERNAME: ${MAIL_USERNAME:-}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+    ports:
+      - "8086:8086"
+    networks:
+      - healthcare-network
+
   api-gateway:
     build:
       context: ./backend
@@ -197,6 +281,9 @@ services:
       - user-service
       - doctor-service
       - search-service
+      - appointment-service
+      - payment-service
+      - notification-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATA_REDIS_HOST: redis
@@ -205,6 +292,9 @@ services:
       USER_SERVICE_URL: http://user-service:8080
       DOCTOR_SERVICE_URL: http://doctor-service:8080
       SEARCH_SERVICE_URL: http://search-service:8080
+      APPOINTMENT_SERVICE_URL: http://appointment-service:8084
+      PAYMENT_SERVICE_URL: http://payment-service:8085
+      NOTIFICATION_SERVICE_URL: http://notification-service:8086
       JWT_SECRET: your-256-bit-secret-key-for-jwt-signing-here
       ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
     ports:

@@ -102,6 +102,87 @@ spring:
                 redis-rate-limiter.burstCapacity: 200
                 key-resolver: "#{@ipKeyResolver}"
 
+        # ==================== APPOINTMENT SERVICE ====================
+        # Public availability endpoints
+        - id: appointment-public
+          uri: ${APPOINTMENT_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/availability/doctors/{doctorId}/slots
+            - Method=GET
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 100
+                key-resolver: "#{@ipKeyResolver}"
+
+        # Protected availability management (doctors)
+        - id: availability-management
+          uri: ${APPOINTMENT_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/availability/**
+          filters:
+            - JwtAuthFilter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 100
+                redis-rate-limiter.burstCapacity: 200
+                key-resolver: "#{@userKeyResolver}"
+
+        # Protected appointment endpoints
+        - id: appointments-protected
+          uri: ${APPOINTMENT_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/appointments/**
+          filters:
+            - JwtAuthFilter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 100
+                redis-rate-limiter.burstCapacity: 200
+                key-resolver: "#{@userKeyResolver}"
+
+        # ==================== PAYMENT SERVICE ====================
+        # Webhook endpoint (no auth, Razorpay signature verification)
+        - id: payment-webhook
+          uri: ${PAYMENT_SERVICE_URL:http://localhost:8085}
+          predicates:
+            - Path=/api/v1/payments/webhook
+            - Method=POST
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 100
+                key-resolver: "#{@ipKeyResolver}"
+
+        # Protected payment endpoints
+        - id: payments-protected
+          uri: ${PAYMENT_SERVICE_URL:http://localhost:8085}
+          predicates:
+            - Path=/api/v1/payments/**
+          filters:
+            - JwtAuthFilter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 100
+                redis-rate-limiter.burstCapacity: 200
+                key-resolver: "#{@userKeyResolver}"
+
+        # ==================== NOTIFICATION SERVICE ====================
+        # Protected notification endpoints
+        - id: notifications-protected
+          uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8086}
+          predicates:
+            - Path=/api/v1/notifications/**
+          filters:
+            - JwtAuthFilter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 100
+                redis-rate-limiter.burstCapacity: 200
+                key-resolver: "#{@userKeyResolver}"
+
 # JWT Configuration
 jwt:
   secret: ${JWT_SECRET:your-256-bit-secret-key-for-jwt-signing-must-be-at-least-32-chars}

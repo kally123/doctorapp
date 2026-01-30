@@ -25,6 +25,9 @@
         <module>doctor-service</module>
         <module>search-service</module>
         <module>api-gateway</module>
+        <module>appointment-service</module>
+        <module>payment-service</module>
+        <module>notification-service</module>
     </modules>
 
     <properties>
@@ -39,6 +42,7 @@
         <jjwt.version>0.12.3</jjwt.version>
         <springdoc.version>2.3.0</springdoc.version>
         <testcontainers.version>1.19.3</testcontainers.version>
+        <flyway.version>10.4.1</flyway.version>
     </properties>
 
     <dependencyManagement>
@@ -57,6 +61,18 @@
                 <groupId>com.healthapp</groupId>
                 <artifactId>healthcare-common</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <!-- Flyway -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-database-postgresql</artifactId>
+                <version>${flyway.version}</version>
             </dependency>
 
             <!-- JWT -->
