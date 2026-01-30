@@ -9,7 +9,7 @@ RUN npm config set registry https://registry.npmjs.org/ && \
     npm config set fetch-retry-maxtimeout 120000
 
 COPY package*.json ./
-RUN npm install --prefer-offline --no-audit --progress=false
+RUN npm install --legacy-peer-deps --prefer-offline --no-audit --progress=false
 
 COPY . .
 RUN npm run build
