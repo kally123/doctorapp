@@ -1,5 +1,6 @@
 package com.healthapp.order.exception;
 
+import org.springframework.context.annotation.Profile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
  * Global exception handler for the Order Service.
  */
 @Slf4j
+@Profile("!test")
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

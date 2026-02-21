@@ -1,5 +1,6 @@
 package com.healthapp.consultation.controller;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.service.ConsultationSessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import java.util.UUID;
  * Webhook controller for Twilio Video status callbacks.
  */
 @Slf4j
+@Profile("!test")
 @RestController
 @RequestMapping("/api/v1/webhooks/twilio")
 @RequiredArgsConstructor

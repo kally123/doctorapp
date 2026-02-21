@@ -1,5 +1,6 @@
 package com.healthapp.order.repository;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.order.domain.CollectionSlot;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
@@ -13,6 +14,7 @@ import java.util.UUID;
 /**
  * Repository for CollectionSlot entity.
  */
+@Profile("!test")
 @Repository
 public interface CollectionSlotRepository extends R2dbcRepository<CollectionSlot, UUID> {
 

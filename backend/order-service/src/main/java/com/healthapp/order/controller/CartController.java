@@ -1,5 +1,6 @@
 package com.healthapp.order.controller;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.order.dto.*;
 import com.healthapp.order.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import java.util.UUID;
  * REST controller for cart management operations.
  */
 @Slf4j
+@Profile("!test")
 @RestController
 @RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor

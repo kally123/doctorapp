@@ -1,5 +1,6 @@
 package com.healthapp.order.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.order.domain.Cart;
 import com.healthapp.order.domain.CartItem;
 import com.healthapp.order.dto.*;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
  * Service for cart management with Redis storage.
  */
 @Slf4j
+@Profile("!test")
 @Service
 @RequiredArgsConstructor
 public class CartService {

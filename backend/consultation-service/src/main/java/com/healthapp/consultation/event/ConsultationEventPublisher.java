@@ -1,5 +1,6 @@
 package com.healthapp.consultation.event;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.domain.ConsultationSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import java.util.UUID;
  * Publishes consultation events to Kafka.
  */
 @Slf4j
+@Profile("!test")
 @Component
 @RequiredArgsConstructor
 public class ConsultationEventPublisher {

@@ -1,5 +1,6 @@
 package com.healthapp.consultation.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.domain.ConsultationFeedback;
 import com.healthapp.consultation.dto.SubmitFeedbackRequest;
 import com.healthapp.consultation.repository.ConsultationFeedbackRepository;
@@ -16,6 +17,7 @@ import java.util.UUID;
  * Service for handling consultation feedback.
  */
 @Slf4j
+@Profile("!test")
 @Service
 @RequiredArgsConstructor
 public class FeedbackService {

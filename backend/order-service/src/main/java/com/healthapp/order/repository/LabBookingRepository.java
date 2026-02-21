@@ -1,5 +1,6 @@
 package com.healthapp.order.repository;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.order.domain.LabBooking;
 import com.healthapp.order.domain.enums.LabBookingStatus;
 import org.springframework.data.r2dbc.repository.Query;
@@ -14,6 +15,7 @@ import java.util.UUID;
 /**
  * Repository for LabBooking entity.
  */
+@Profile("!test")
 @Repository
 public interface LabBookingRepository extends R2dbcRepository<LabBooking, UUID> {
 

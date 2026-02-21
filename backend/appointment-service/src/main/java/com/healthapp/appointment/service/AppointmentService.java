@@ -39,7 +39,7 @@ public class AppointmentService {
                 .flatMap(slot -> createReservation(patientId, slot, request))
                 .flatMap(this::updateSlotToReserved)
                 .flatMap(this::saveStatusHistory)
-                .doOnSuccess(appointment -> eventPublisher.publishReserved(appointment))
+                .doOnSuccess(eventPublisher::publishReserved)
                 .map(this::toReservationResponse);
     }
     
@@ -129,7 +129,7 @@ public class AppointmentService {
                                 .thenReturn(appointment))
                 .flatMap(appointment -> saveStatusTransition(appointment, 
                         AppointmentStatus.PENDING_PAYMENT, AppointmentStatus.CONFIRMED, patientId))
-                .doOnSuccess(appointment -> eventPublisher.publishConfirmed(appointment))
+                .doOnSuccess(eventPublisher::publishConfirmed)
                 .map(this::toDto);
     }
     
@@ -169,7 +169,7 @@ public class AppointmentService {
                 .flatMap(appointment -> 
                         slotRepo.updateStatus(appointment.getSlotId(), SlotStatus.AVAILABLE, null)
                                 .thenReturn(appointment))
-                .doOnSuccess(appointment -> eventPublisher.publishCancelled(appointment))
+                .doOnSuccess(eventPublisher::publishCancelled)
                 .map(this::toDto);
     }
     
@@ -197,7 +197,7 @@ public class AppointmentService {
                 .flatMap(appointment -> 
                         slotRepo.updateStatus(appointment.getSlotId(), SlotStatus.AVAILABLE, null)
                                 .thenReturn(appointment))
-                .doOnSuccess(appointment -> eventPublisher.publishExpired(appointment))
+                .doOnSuccess(eventPublisher::publishExpired)
                 .then();
     }
     

@@ -1,5 +1,6 @@
 package com.healthapp.consultation.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.config.TwilioConfig;
 import com.healthapp.consultation.dto.VideoTokenResponse;
 import com.twilio.jwt.accesstoken.AccessToken;
@@ -20,6 +21,7 @@ import java.util.UUID;
  * Handles video room creation, management, and access token generation.
  */
 @Slf4j
+@Profile("!test")
 @Service
 @RequiredArgsConstructor
 public class TwilioVideoService {

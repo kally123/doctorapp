@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.r2dbc.R2dbcDataAutoConfiguration;
-import org.springframework.cache.annotation.EnableCaching;
 
 /**
  * Search Service Application.
@@ -15,7 +14,6 @@ import org.springframework.cache.annotation.EnableCaching;
     R2dbcAutoConfiguration.class,
     R2dbcDataAutoConfiguration.class
 })
-@EnableCaching
 public class SearchServiceApplication {
     
     public static void main(String[] args) {

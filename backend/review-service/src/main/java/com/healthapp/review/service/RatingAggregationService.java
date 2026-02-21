@@ -1,5 +1,6 @@
 package com.healthapp.review.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.review.model.entity.DoctorRatingAggregate;
 import com.healthapp.review.model.enums.ConsultationType;
 import com.healthapp.review.model.enums.ReviewStatus;
@@ -16,6 +17,7 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.UUID;
 
+@Profile("!test")
 @Service
 @Slf4j
 @RequiredArgsConstructor

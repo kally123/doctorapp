@@ -45,7 +45,7 @@ public class VitalsService {
             VitalType.BLOOD_PRESSURE_DIASTOLIC, "mmHg",
             VitalType.HEART_RATE, "bpm",
             VitalType.RESPIRATORY_RATE, "breaths/min",
-            VitalType.TEMPERATURE, "°C",
+            VitalType.TEMPERATURE, "Â°C",
             VitalType.OXYGEN_SATURATION, "%",
             VitalType.WEIGHT, "kg",
             VitalType.HEIGHT, "cm",

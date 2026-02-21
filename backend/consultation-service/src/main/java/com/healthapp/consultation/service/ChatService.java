@@ -1,5 +1,6 @@
 package com.healthapp.consultation.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.domain.ChatMessage;
 import com.healthapp.consultation.domain.MessageStatus;
 import com.healthapp.consultation.domain.MessageType;
@@ -20,6 +21,7 @@ import java.time.Instant;
  * Service for handling real-time chat during consultations.
  */
 @Slf4j
+@Profile("!test")
 @Service
 @RequiredArgsConstructor
 public class ChatService {

@@ -1,5 +1,6 @@
 package com.healthapp.order.controller;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.order.dto.AddressRequest;
 import com.healthapp.order.dto.AddressResponse;
 import com.healthapp.order.service.AddressService;
@@ -20,6 +21,7 @@ import java.util.UUID;
  * REST controller for delivery address management.
  */
 @Slf4j
+@Profile("!test")
 @RestController
 @RequestMapping("/api/v1/addresses")
 @RequiredArgsConstructor

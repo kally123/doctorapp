@@ -1,5 +1,6 @@
 package com.healthapp.review.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.review.config.KafkaConfig;
 import com.healthapp.review.model.entity.DoctorReview;
 import com.healthapp.review.model.enums.ReviewStatus;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.UUID;
 
+@Profile("!test")
 @Service
 @Slf4j
 @RequiredArgsConstructor

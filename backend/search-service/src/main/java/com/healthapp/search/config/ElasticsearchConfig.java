@@ -15,12 +15,15 @@ import org.elasticsearch.client.RestClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.elasticsearch.repository.config.EnableReactiveElasticsearchRepositories;
 
 /**
  * Elasticsearch configuration for reactive operations.
+ * Disabled in test profile to avoid requiring Elasticsearch during tests.
  */
 @Configuration
+@Profile("!test")
 @EnableReactiveElasticsearchRepositories(basePackages = "com.healthapp.search.repository")
 public class ElasticsearchConfig {
     

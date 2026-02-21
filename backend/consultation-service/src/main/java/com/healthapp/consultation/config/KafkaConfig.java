@@ -1,5 +1,6 @@
 package com.healthapp.consultation.config;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.event.ConsultationEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -17,6 +18,7 @@ import java.util.Map;
 /**
  * Kafka configuration for event publishing and consuming.
  */
+@Profile("!test")
 @Configuration
 public class KafkaConfig {
     

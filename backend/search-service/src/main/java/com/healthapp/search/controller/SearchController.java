@@ -6,6 +6,7 @@ import com.healthapp.search.service.DoctorSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -13,9 +14,11 @@ import java.util.List;
 
 /**
  * REST controller for doctor search operations.
+ * Disabled in test profile to avoid requiring Elasticsearch during tests.
  */
 @Slf4j
 @RestController
+@Profile("!test")
 @RequestMapping("/api/v1/search")
 @RequiredArgsConstructor
 public class SearchController {

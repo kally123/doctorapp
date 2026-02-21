@@ -1,5 +1,6 @@
 package com.healthapp.prescription.repository;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.prescription.domain.PrescriptionTemplate;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
@@ -7,8 +8,10 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import org.springframework.context.annotation.Profile;
 import java.util.UUID;
 
+@Profile("!test")
 @Repository
 public interface PrescriptionTemplateRepository extends R2dbcRepository<PrescriptionTemplate, UUID> {
 

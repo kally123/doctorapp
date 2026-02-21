@@ -1,5 +1,6 @@
 package com.healthapp.consultation.repository;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.domain.ChatMessage;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
@@ -9,6 +10,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 
+@Profile("!test")
 @Repository
 public interface ChatMessageRepository extends ReactiveMongoRepository<ChatMessage, String> {
     

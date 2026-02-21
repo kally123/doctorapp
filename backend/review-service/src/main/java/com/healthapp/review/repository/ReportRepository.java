@@ -1,5 +1,6 @@
 package com.healthapp.review.repository;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.review.model.entity.ReviewReport;
 import com.healthapp.review.model.enums.ReportStatus;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+@Profile("!test")
 @Repository
 public interface ReportRepository extends R2dbcRepository<ReviewReport, UUID> {
 

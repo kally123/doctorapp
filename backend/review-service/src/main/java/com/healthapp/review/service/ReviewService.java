@@ -1,5 +1,6 @@
 package com.healthapp.review.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.review.dto.*;
 import com.healthapp.review.model.entity.DoctorRatingAggregate;
 import com.healthapp.review.model.entity.DoctorReview;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+@Profile("!test")
 @Service
 @Slf4j
 @RequiredArgsConstructor

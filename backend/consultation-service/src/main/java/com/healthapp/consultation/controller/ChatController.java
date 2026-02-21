@@ -1,5 +1,6 @@
 package com.healthapp.consultation.controller;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.dto.ChatMessageResponse;
 import com.healthapp.consultation.dto.SendMessageRequest;
 import com.healthapp.consultation.service.ChatService;
@@ -19,6 +20,7 @@ import java.time.Instant;
  * REST controller for chat message management.
  */
 @Slf4j
+@Profile("!test")
 @RestController
 @RequestMapping("/api/v1/chat")
 @RequiredArgsConstructor

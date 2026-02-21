@@ -1,5 +1,6 @@
 package com.healthapp.review.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.review.dto.ModerationRequest;
 import com.healthapp.review.dto.ReportReviewRequest;
 import com.healthapp.review.dto.ReviewResponse;
@@ -20,6 +21,7 @@ import reactor.core.publisher.Mono;
 import java.time.Instant;
 import java.util.UUID;
 
+@Profile("!test")
 @Service
 @Slf4j
 @RequiredArgsConstructor

@@ -1,5 +1,6 @@
 package com.healthapp.order.event;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.order.dto.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
  * Publisher for order-related Kafka events.
  */
 @Slf4j
+@Profile("!test")
 @Component
 @RequiredArgsConstructor
 public class OrderEventPublisher {

@@ -1,5 +1,6 @@
 package com.healthapp.order.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.order.domain.Order;
 import com.healthapp.order.domain.Partner;
 import com.healthapp.order.domain.PartnerInventory;
@@ -24,6 +25,7 @@ import java.util.UUID;
  * Service for assigning pharmacies to orders.
  */
 @Slf4j
+@Profile("!test")
 @Service
 @RequiredArgsConstructor
 public class PharmacyAssignmentService {

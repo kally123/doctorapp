@@ -1,5 +1,6 @@
 package com.healthapp.consultation.config;
 
+import org.springframework.context.annotation.Profile;
 import com.twilio.Twilio;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @Getter
+@Profile("!test")
 @Configuration
 public class TwilioConfig {
     

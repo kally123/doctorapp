@@ -1,7 +1,6 @@
 package com.healthapp.appointment.repository;
 
 import com.healthapp.appointment.domain.Appointment;
-import com.healthapp.appointment.domain.AppointmentStatus;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;

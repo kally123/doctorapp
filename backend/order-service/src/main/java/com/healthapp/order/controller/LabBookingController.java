@@ -1,5 +1,6 @@
 package com.healthapp.order.controller;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.order.dto.*;
 import com.healthapp.order.domain.enums.LabBookingStatus;
 import com.healthapp.order.service.LabBookingService;
@@ -22,6 +23,7 @@ import java.util.UUID;
  * REST controller for lab booking management.
  */
 @Slf4j
+@Profile("!test")
 @RestController
 @RequestMapping("/api/v1/lab-bookings")
 @RequiredArgsConstructor

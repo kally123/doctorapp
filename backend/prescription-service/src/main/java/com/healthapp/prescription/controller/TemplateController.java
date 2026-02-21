@@ -1,5 +1,6 @@
 package com.healthapp.prescription.controller;
 
+import org.springframework.context.annotation.Profile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import org.springframework.context.annotation.Profile;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +26,7 @@ import java.util.UUID;
  * REST controller for prescription templates.
  */
 @Slf4j
+@Profile("!test")
 @RestController
 @RequestMapping("/api/v1/templates")
 @RequiredArgsConstructor
