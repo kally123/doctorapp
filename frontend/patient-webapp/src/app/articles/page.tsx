@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import ArticleList from '@/components/articles/ArticleList';
 import CategorySidebar from '@/components/articles/CategorySidebar';
 import FeaturedArticles from '@/components/articles/FeaturedArticles';
@@ -98,12 +99,36 @@ export default async function ArticlesPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
           <aside className="lg:w-64 flex-shrink-0">
-            <CategorySidebar categories={data.categories} />
+            <Suspense fallback={
+              <div className="bg-white rounded-xl shadow-sm p-5 animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-32 mb-4"></div>
+                <div className="space-y-2">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <div key={n} className="h-10 bg-gray-200 rounded"></div>
+                  ))}
+                </div>
+              </div>
+            }>
+              <CategorySidebar categories={data.categories} />
+            </Suspense>
           </aside>
 
           {/* Articles Grid */}
           <main className="flex-1">
-            <ArticleList />
+            <Suspense fallback={
+              <div className="space-y-6">
+                {[1, 2, 3].map((n) => (
+                  <div key={n} className="bg-white rounded-xl p-4 animate-pulse">
+                    <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
+                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  </div>
+                ))}
+              </div>
+            }>
+              <ArticleList />
+            </Suspense>
           </main>
         </div>
       </div>

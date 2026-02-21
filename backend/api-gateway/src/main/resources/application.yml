@@ -384,6 +384,74 @@ spring:
                 redis-rate-limiter.burstCapacity: 200
                 key-resolver: "#{@userKeyResolver}"
 
+        # ==================== ORDER SERVICE ====================
+        # Protected order endpoints
+        - id: orders-protected
+          uri: ${ORDER_SERVICE_URL:http://localhost:8090}
+          predicates:
+            - Path=/api/v1/orders/**
+          filters:
+            - JwtAuthFilter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 100
+                redis-rate-limiter.burstCapacity: 200
+                key-resolver: "#{@userKeyResolver}"
+
+        # ==================== REVIEW SERVICE ====================
+        # Public review viewing
+        - id: reviews-public
+          uri: ${REVIEW_SERVICE_URL:http://localhost:8091}
+          predicates:
+            - Path=/api/v1/reviews/doctor/{doctorId}
+            - Method=GET
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 100
+                key-resolver: "#{@ipKeyResolver}"
+
+        # Protected review endpoints
+        - id: reviews-protected
+          uri: ${REVIEW_SERVICE_URL:http://localhost:8091}
+          predicates:
+            - Path=/api/v1/reviews/**
+          filters:
+            - JwtAuthFilter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 100
+                redis-rate-limiter.burstCapacity: 200
+                key-resolver: "#{@userKeyResolver}"
+
+        # ==================== CONTENT SERVICE ====================
+        # Public content viewing
+        - id: content-public
+          uri: ${CONTENT_SERVICE_URL:http://localhost:8092}
+          predicates:
+            - Path=/api/v1/articles/**, /api/v1/categories/**
+            - Method=GET
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 100
+                key-resolver: "#{@ipKeyResolver}"
+
+        # Protected content management endpoints
+        - id: content-protected
+          uri: ${CONTENT_SERVICE_URL:http://localhost:8092}
+          predicates:
+            - Path=/api/v1/articles/**, /api/v1/categories/**
+          filters:
+            - JwtAuthFilter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 100
+                redis-rate-limiter.burstCapacity: 200
+                key-resolver: "#{@userKeyResolver}"
+
 # JWT Configuration
 jwt:
   secret: ${JWT_SECRET:your-256-bit-secret-key-for-jwt-signing-must-be-at-least-32-chars}
@@ -398,10 +466,18 @@ management:
     web:
       exposure:
         include: health,info,metrics,prometheus,gateway
+      base-path: /actuator
   endpoint:
     health:
-      show-details: when-authorized
+      show-details: always
+      probes:
+        enabled: true
     gateway:
+      enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
       enabled: true
 
 # Logging
