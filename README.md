@@ -8,6 +8,18 @@
 
 A comprehensive healthcare platform similar to Practo, enabling patients to discover doctors, book appointments, conduct video consultations, manage health records, order medicines, and book lab tests.
 
+### 🚀 Deploy to Free Cloud in 30 Minutes
+
+> **100% FREE deployment** using Oracle Cloud Always Free Tier + Vercel + Netlify
+
+```bash
+git clone https://github.com/kally123/doctorApp.git
+cd doctorApp
+./scripts/deploy-oracle-cloud.sh  # Follow the prompts
+```
+
+📖 **[Complete Deployment Guide](docs/deployment/DEPLOYMENT_GUIDE.md)** | **[Free Cloud Options](docs/deployment/deployment-free-cloud.md)**
+
 ---
 
 ## 📋 Table of Contents
@@ -26,6 +38,7 @@ A comprehensive healthcare platform similar to Practo, enabling patients to disc
 - [Security](#security)
 - [Monitoring & Observability](#monitoring--observability)
 - [Deployment](#deployment)
+  - [Free Cloud Deployment](#free-cloud-deployment)
 - [Troubleshooting](#troubleshooting)
 - [Performance & Resource Requirements](#performance--resource-requirements)
 - [FAQ](#faq)
@@ -784,6 +797,81 @@ kubectl apply -f k8s/ingress.yaml
 
 ---
 
+## ☁️ Free Cloud Deployment
+
+The platform can be deployed to various free cloud providers. **[See all deployment guides →](docs/deployment/)**
+
+### 📚 Deployment Guides
+
+1. **[Free Cloud Deployment Guide](docs/deployment/deployment-free-cloud.md)** - Complete guide covering:
+   - ⭐ **Oracle Cloud (Always Free)** - RECOMMENDED for full deployment
+   - Google Cloud Platform (GCP Free Tier)
+   - AWS Free Tier
+   - Azure for Students
+   - Hybrid approach (combining multiple providers)
+
+2. **[Railway & Render Deployment](docs/deployment/deployment-railway-render.md)** - Quick deployment to:
+   - Railway.app (Hobby plan - $5/month credit)
+   - Render.com (Free tier with limitations)
+   - Fly.io (Free tier - 3 VMs)
+
+3. **[Docker Optimization Guide](docs/deployment/docker-optimization.md)** - Optimize for resource-constrained environments:
+   - Reduce image sizes by 70%
+   - Cut RAM usage by 50%
+   - Faster startup times
+   - Multi-stage builds
+   - JVM optimization
+
+### 🎯 Quick Recommendations
+
+| Use Case | Recommended Platform | Services | Cost |
+|----------|---------------------|----------|------|
+| **Full Production** | Oracle Cloud Always Free | All 13 services | **FREE Forever** |
+| **MVP/Testing** | Railway.app | 3-4 core services | $5/month credit |
+| **Demo/POC** | Render.com | Essential services | Free (with sleep) |
+| **Individual Service Test** | Fly.io | 1-3 services | Free (3 VMs) |
+| **Hybrid (Best)** | Oracle + Vercel + Netlify | Backend + Frontends | **FREE** |
+
+### 🚀 Fastest Deployment (Oracle Cloud)
+
+```bash
+# Clone repository
+git clone https://github.com/kally123/doctorApp.git
+cd doctorApp
+
+# Run automated deployment script
+chmod +x scripts/deploy-oracle-cloud.sh
+./scripts/deploy-oracle-cloud.sh
+
+# Follow the prompts - deployment takes ~20-30 minutes
+```
+
+### 📖 Step-by-Step Guides
+
+- **Oracle Cloud**: See [deployment-free-cloud.md](docs/deployment/deployment-free-cloud.md#option-1-oracle-cloud-free-tier)
+- **Railway**: See [deployment-railway-render.md](docs/deployment/deployment-railway-render.md#quick-deploy-to-railwayapp)
+- **Render**: See [deployment-railway-render.md](docs/deployment/deployment-railway-render.md#quick-deploy-to-rendercom)
+- **Docker Optimization**: See [docker-optimization.md](docs/deployment/docker-optimization.md)
+
+### 💰 Cost Comparison
+
+| Provider | Monthly Cost | Limitations | Best For |
+|----------|--------------|-------------|----------|
+| Oracle Cloud | **$0** | None (Forever free) | Production, Full stack |
+| Railway | $0-5 | $5 credit/month | Quick MVP |
+| Render | $0 | Services sleep | Demos |
+| Vercel | $0 | Bandwidth limits | Frontend only |
+| Netlify | $0 | Bandwidth limits | Frontend only |
+
+### ⚠️ Important Notes
+
+- **Oracle Cloud** offers the most generous free tier (4 ARM VMs, 24GB RAM total)
+- **Railway** credit runs out quickly with many services
+- **Render** services sleep after 15 minutes (slow cold starts)
+- **Hybrid approach** (Oracle + Vercel + Netlify) is FREE and production-ready
+
+---
+
 ## 🔧 Troubleshooting
 
 ### Common Issues
@@ -1007,6 +1095,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 | `docker-compose.yaml` | Local development environment setup |
 | `backend/pom.xml` | Maven parent POM for all backend services |
 | `PHASE*_IMPLEMENTATION_STATUS.md` | Implementation status for each phase (1-6) |
+| `docs/deployment/DEPLOYMENT_GUIDE.md` | **🚀 Complete deployment guide** |
+| `docs/deployment/deployment-free-cloud.md` | Detailed free cloud deployment options |
+| `docs/deployment/deployment-railway-render.md` | Quick deploy to Railway/Render/Fly.io |
+| `docs/deployment/frontend-deployment.md` | Frontend deployment to Vercel/Netlify |
+| `docs/deployment/docker-optimization.md` | Docker image optimization guide |
+| `docs/deployment/QUICK_DEPLOY.md` | Quick reference deployment card |
+| `docs/production-checklist.md` | Production readiness checklist |
 
 ### Quick Commands
 
