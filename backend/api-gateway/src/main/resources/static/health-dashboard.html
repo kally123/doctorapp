@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Platform - Service Health Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 16px;
+        }
+
+        .status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .status-card h3 {
+            color: #2d3748;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .status-card .value {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .status-card.healthy .value {
+            color: #48bb78;
+        }
+
+        .status-card.degraded .value {
+            color: #f56565;
+        }
+
+        .status-card.total .value {
+            color: #4299e1;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #cbd5e0;
+            transition: all 0.3s;
+        }
+
+        .service-card.up {
+            border-left-color: #48bb78;
+        }
+
+        .service-card.down {
+            border-left-color: #f56565;
+        }
+
+        .service-card.unknown {
+            border-left-color: #ed8936;
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .service-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.up {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-badge.down {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .status-badge.unknown {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+
+        .service-info {
+            display: grid;
+            gap: 8px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .info-label {
+            color: #718096;
+        }
+
+        .info-value {
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .response-time {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .response-time.fast {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .response-time.medium {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+
+        .response-time.slow {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .refresh-btn:hover {
+            background: #5a67d8;
+        }
+
+        .refresh-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .last-updated {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .auto-refresh label {
+            color: #2d3748;
+            font-size: 14px;
+        }
+
+        .auto-refresh input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                🏥 Healthcare Platform
+                <span class="pulse" style="font-size: 20px;">●</span>
+            </h1>
+            <p>Real-time service health monitoring dashboard</p>
+            <button class="refresh-btn" id="refreshBtn" onclick="refreshHealth()">🔄 Refresh Now</button>
+            <div class="auto-refresh">
+                <input type="checkbox" id="autoRefresh" checked>
+                <label for="autoRefresh">Auto-refresh every 30 seconds</label>
+            </div>
+        </div>
+
+        <div id="errorContainer"></div>
+
+        <div class="status-cards" id="statusCards">
+            <div class="status-card total">
+                <h3>Total Services</h3>
+                <div class="value" id="totalServices">-</div>
+                <p style="color: #718096; font-size: 14px;">Microservices</p>
+            </div>
+            <div class="status-card healthy">
+                <h3>Healthy</h3>
+                <div class="value" id="healthyServices">-</div>
+                <p style="color: #718096; font-size: 14px;">Services Online</p>
+            </div>
+            <div class="status-card degraded">
+                <h3>Unhealthy</h3>
+                <div class="value" id="unhealthyServices">-</div>
+                <p style="color: #718096; font-size: 14px;">Services Down</p>
+            </div>
+            <div class="status-card total">
+                <h3>Overall Status</h3>
+                <div class="value" id="overallStatus" style="font-size: 24px;">-</div>
+                <p style="color: #718096; font-size: 14px;">System Health</p>
+            </div>
+        </div>
+
+        <div id="loading" class="loading">
+            Loading service health data...
+        </div>
+
+        <div class="services-grid" id="servicesGrid" style="display: none;">
+        </div>
+
+        <div class="last-updated">
+            Last updated: <span id="lastUpdated">-</span>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval = null;
+
+        function formatResponseTime(ms) {
+            if (ms < 100) return `${ms}ms`;
+            if (ms < 1000) return `${ms}ms`;
+            return `${(ms / 1000).toFixed(2)}s`;
+        }
+
+        function getResponseTimeClass(ms) {
+            if (ms < 200) return 'fast';
+            if (ms < 1000) return 'medium';
+            return 'slow';
+        }
+
+        function formatTimestamp(timestamp) {
+            return new Date(timestamp).toLocaleString();
+        }
+
+        async function refreshHealth() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            const loading = document.getElementById('loading');
+            const servicesGrid = document.getElementById('servicesGrid');
+            const errorContainer = document.getElementById('errorContainer');
+
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = '🔄 Refreshing...';
+            loading.style.display = 'block';
+            servicesGrid.style.display = 'none';
+            errorContainer.innerHTML = '';
+
+            try {
+                const response = await fetch('/dashboard/health');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // Update status cards
+                document.getElementById('totalServices').textContent = data.totalServices;
+                document.getElementById('healthyServices').textContent = data.healthyServices;
+                document.getElementById('unhealthyServices').textContent = data.unhealthyServices;
+                document.getElementById('overallStatus').textContent = data.overallStatus;
+
+                // Update services grid
+                servicesGrid.innerHTML = '';
+                data.services.forEach(service => {
+                    const card = document.createElement('div');
+                    card.className = `service-card ${service.status.toLowerCase()}`;
+
+                    const detailsHtml = service.details ? `
+                        <div class="info-row">
+                            <span class="info-label">Components:</span>
+                            <span class="info-value">${Object.keys(service.details).length}</span>
+                        </div>
+                    ` : '';
+
+                    const errorHtml = service.error ? `
+                        <div class="info-row">
+                            <span class="info-label">Error:</span>
+                            <span class="info-value" style="color: #e53e3e; font-size: 12px;">${service.error}</span>
+                        </div>
+                    ` : '';
+
+                    card.innerHTML = `
+                        <div class="service-header">
+                            <div class="service-name">${service.name}</div>
+                            <span class="status-badge ${service.status.toLowerCase()}">${service.status}</span>
+                        </div>
+                        <div class="service-info">
+                            <div class="info-row">
+                                <span class="info-label">URL:</span>
+                                <span class="info-value" style="font-size: 12px;">${service.url}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Response Time:</span>
+                                <span class="response-time ${getResponseTimeClass(service.responseTime)}">
+                                    ${formatResponseTime(service.responseTime)}
+                                </span>
+                            </div>
+                            ${detailsHtml}
+                            ${errorHtml}
+                        </div>
+                    `;
+                    servicesGrid.appendChild(card);
+                });
+
+                document.getElementById('lastUpdated').textContent = formatTimestamp(data.timestamp);
+
+                loading.style.display = 'none';
+                servicesGrid.style.display = 'grid';
+
+            } catch (error) {
+                console.error('Error fetching health data:', error);
+                errorContainer.innerHTML = `
+                    <div class="error-message">
+                        ⚠️ Failed to fetch health data: ${error.message}
+                    </div>
+                `;
+                loading.style.display = 'none';
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = '🔄 Refresh Now';
+            }
+        }
+
+        function setupAutoRefresh() {
+            const autoRefreshCheckbox = document.getElementById('autoRefresh');
+
+            autoRefreshCheckbox.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    startAutoRefresh();
+                } else {
+                    stopAutoRefresh();
+                }
+            });
+
+            // Start auto-refresh by default
+            if (autoRefreshCheckbox.checked) {
+                startAutoRefresh();
+            }
+        }
+
+        function startAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            autoRefreshInterval = setInterval(refreshHealth, 30000); // 30 seconds
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        // Initial load
+        window.addEventListener('load', () => {
+            refreshHealth();
+            setupAutoRefresh();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            stopAutoRefresh();
+        });
+    </script>
+</body>
+</html>

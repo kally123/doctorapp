@@ -6,8 +6,8 @@ services:
     image: postgres:15-alpine
     container_name: healthcare-postgres
     environment:
-      POSTGRES_USER: healthcare_admin
-      POSTGRES_PASSWORD: healthcare_password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       POSTGRES_MULTIPLE_DATABASES: user_db,doctor_db,appointment_db,payment_db,notification_db,consultation_db,prescription_db
     ports:
       - "5432:5432"
@@ -150,7 +150,7 @@ services:
       JWT_EXPIRATION: 3600000
       JWT_REFRESH_EXPIRATION: 604800000
     ports:
-      - "8081:8080"
+      - "8081:8081"
     networks:
       - healthcare-network
 
@@ -180,7 +180,7 @@ services:
       SPRING_DATA_REDIS_PASSWORD: redis_password
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
-      - "8082:8080"
+      - "8082:8082"
     networks:
       - healthcare-network
 
@@ -204,7 +204,7 @@ services:
       SPRING_DATA_REDIS_PASSWORD: redis_password
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
-      - "8083:8080"
+      - "8083:8083"
     networks:
       - healthcare-network
 
@@ -429,9 +429,9 @@ services:
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: redis_password
-      USER_SERVICE_URL: http://user-service:8080
-      DOCTOR_SERVICE_URL: http://doctor-service:8080
-      SEARCH_SERVICE_URL: http://search-service:8080
+      USER_SERVICE_URL: http://user-service:8081
+      DOCTOR_SERVICE_URL: http://doctor-service:8082
+      SEARCH_SERVICE_URL: http://search-service:8083
       APPOINTMENT_SERVICE_URL: http://appointment-service:8084
       PAYMENT_SERVICE_URL: http://payment-service:8085
       CONSULTATION_SERVICE_URL: http://consultation-service:8087
@@ -460,19 +460,19 @@ services:
     networks:
       - healthcare-network
 
-  doctor-dashboard:
-    build:
-      context: ./frontend/doctor-dashboard
-      dockerfile: Dockerfile
-    container_name: healthcare-doctor-dashboard
-    depends_on:
-      - api-gateway
-    environment:
-      VITE_API_URL: http://localhost:8080/api
-    ports:
-      - "5173:80"
-    networks:
-      - healthcare-network
+#  doctor-dashboard:
+#    build:
+#      context: ./frontend/doctor-dashboard
+#      dockerfile: Dockerfile
+#    container_name: healthcare-doctor-dashboard
+#    depends_on:
+#      - api-gateway
+#    environment:
+#      VITE_API_URL: http://localhost:8080/api
+#    ports:
+#      - "5173:80"
+#    networks:
+#      - healthcare-network
 
 volumes:
   postgres_data:
