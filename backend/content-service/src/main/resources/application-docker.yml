@@ -1,0 +1,47 @@
+# Docker Profile Configuration for Content Service
+spring:
+  # Explicitly disable all SQL/JDBC/R2DBC/Flyway auto-configurations
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.r2dbc.R2dbcDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
+
+  # MongoDB Configuration
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://admin:mongo_password@mongodb:27017/healthapp_content?authSource=admin}
+      auto-index-creation: true
+
+    # Redis Configuration
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:redis_password}
+
+    # Elasticsearch Configuration
+    elasticsearch:
+      uris: ${ELASTICSEARCH_HOSTS:http://elasticsearch:9200}
+
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    producer:
+      client-id: content-service-producer
+      acks: all
+      retries: 3
+    consumer:
+      group-id: content-service-group
+      auto-offset-reset: earliest
+
+# Logging for Docker
+logging:
+  level:
+    com.healthapp.content: INFO
+    org.springframework.data.mongodb: DEBUG
+    org.elasticsearch: WARN
+

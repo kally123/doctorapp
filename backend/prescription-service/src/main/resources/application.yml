@@ -1,3 +1,6 @@
+# Server
+server:
+  port: ${SERVER_PORT:8088}
 spring:
   application:
     name: prescription-service
@@ -59,9 +62,6 @@ jwt:
   access-token-expiry: ${JWT_ACCESS_EXPIRY:900}
   refresh-token-expiry: ${JWT_REFRESH_EXPIRY:604800}
 
-# Server
-server:
-  port: ${SERVER_PORT:8088}
 
 # AWS S3 for PDF storage
 aws:

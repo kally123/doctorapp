@@ -55,6 +55,12 @@ public class HealthDashboardController {
     @Value("${EHR_SERVICE_URL:http://localhost:8089}")
     private String ehrServiceUrl;
 
+    @Value("${ORDER_SERVICE_URL:http://localhost:8090}")
+    private String orderServiceUrl;
+
+    @Value("${REVIEW_SERVICE_URL:http://localhost:8091}")
+    private String reviewServiceUrl;
+
 
     private final WebClient webClient;
 
@@ -86,7 +92,9 @@ public class HealthDashboardController {
                 new ServiceHealth("Notification Service", notificationServiceUrl, false),
                 new ServiceHealth("Consultation Service", consultationServiceUrl, false),
                 new ServiceHealth("Prescription Service", prescriptionServiceUrl, false),
-                new ServiceHealth("EHR Service", ehrServiceUrl, false)
+                new ServiceHealth("EHR Service", ehrServiceUrl, false),
+                new ServiceHealth("Order Service", orderServiceUrl, false),
+                new ServiceHealth("Review Service", reviewServiceUrl, false)
         );
 
         List<Mono<Map<String, Object>>> healthChecks = services.stream()

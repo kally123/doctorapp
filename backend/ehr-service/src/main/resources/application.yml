@@ -10,7 +10,7 @@ spring:
   
   data:
     mongodb:
-      uri: mongodb://localhost:27017/ehr_db
+      uri: mongodb://${MONGO_USERNAME:admin}:${MONGO_PASSWORD:mongo_password}@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${MONGO_DATABASE:ehr_db}
       auto-index-creation: true
     
     redis:

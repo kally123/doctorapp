@@ -10,8 +10,8 @@ spring:
   
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/consultation_db
-    username: healthcare_admin
-    password: healthcare_password
+    username: postgres
+    password: postgres
     pool:
       initial-size: 5
       max-size: 20
@@ -20,14 +20,14 @@ spring:
   flyway:
     enabled: true
     url: jdbc:postgresql://localhost:5432/consultation_db
-    user: healthcare_admin
-    password: healthcare_password
+    user: postgres
+    password: postgres
     baseline-on-migrate: true
     locations: classpath:db/migration
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/consultation_chat
+      uri: mongodb://${MONGO_USERNAME:admin}:${MONGO_PASSWORD:mongo_password}@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${MONGO_DATABASE:consultation_chat}
       auto-index-creation: true
     redis:
       host: localhost

@@ -1,3 +1,7 @@
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8081}
+
 spring:
   application:
     name: user-service
@@ -55,10 +59,6 @@ otp:
   length: 6
   expiry-minutes: 10
   max-attempts: 3
-
-# Server Configuration
-server:
-  port: ${SERVER_PORT:8081}
 
 # Actuator Configuration
 management:

@@ -1,14 +1,23 @@
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8092}
 spring:
+  # Explicitly disable SQL-related auto-configurations
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.r2dbc.R2dbcDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
   application:
     name: content-service
-
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
 
   # MongoDB Configuration
   data:
     mongodb:
-      uri: mongodb://${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${MONGO_DATABASE:healthapp_content}
+      uri: mongodb://${MONGO_USERNAME:admin}:${MONGO_PASSWORD:mongo_password}@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${MONGO_DATABASE:healthapp_content}
       auto-index-creation: true
 
     # Redis Configuration
@@ -20,7 +29,7 @@ spring:
 
     # Elasticsearch Configuration
     elasticsearch:
-      cluster-nodes: ${ELASTICSEARCH_HOSTS:localhost:9200}
+      uris: ${ELASTICSEARCH_HOSTS:http://localhost:9200}
 
   # Kafka Configuration
   kafka:
@@ -37,10 +46,6 @@ spring:
 # JWT Configuration
 jwt:
   secret: ${JWT_SECRET:your-256-bit-secret-key-for-jwt-signing-must-be-at-least-32-chars}
-
-# Server Configuration
-server:
-  port: ${SERVER_PORT:8091}
 
 # AWS S3 Configuration
 aws:

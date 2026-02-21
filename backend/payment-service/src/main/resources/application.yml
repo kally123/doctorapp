@@ -8,6 +8,12 @@ spring:
   main:
     allow-bean-definition-overriding: true
   
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
   r2dbc:
     url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:paymentdb}
     username: ${DB_USERNAME:postgres}
@@ -65,6 +71,9 @@ management:
   endpoint:
     health:
       show-details: when_authorized
+  health:
+    redis:
+      enabled: false
 
 # Logging
 logging:

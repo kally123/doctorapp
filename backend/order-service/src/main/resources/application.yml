@@ -1,3 +1,6 @@
+# Server
+server:
+  port: ${SERVER_PORT:8090}
 spring:
   application:
     name: order-service
@@ -50,10 +53,6 @@ spring:
       properties:
         spring.json.trusted.packages: com.healthapp.*
 
-# Server
-server:
-  port: ${SERVER_PORT:8089}
-
 # AWS S3 for lab reports
 aws:
   s3:
@@ -98,10 +97,8 @@ lab:
 kafka:
   topics:
     order-events: order-events
-    lab-booking-events: lab-booking-events
-    payment-events: payment-events
 
-# Actuator
+# Management & Actuator
 management:
   endpoints:
     web:
@@ -110,8 +107,11 @@ management:
   endpoint:
     health:
       show-details: when_authorized
-      probes:
-        enabled: true
+  health:
+    redis:
+      enabled: false
+    lab-booking-events: lab-booking-events
+    payment-events: payment-events
   metrics:
     tags:
       application: ${spring.application.name}

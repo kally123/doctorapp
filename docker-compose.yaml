@@ -8,14 +8,14 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_MULTIPLE_DATABASES: user_db,doctor_db,appointment_db,payment_db,notification_db,consultation_db,prescription_db
+      POSTGRES_MULTIPLE_DATABASES: user_db,doctor_db,appointment_db,payment_db,notification_db,consultation_db,prescription_db,order_db,review_db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-multiple-databases.sh:/docker-entrypoint-initdb.d/init-multiple-databases.sh
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U healthcare_admin"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -87,11 +87,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: mongo_password
-      MONGO_INITDB_DATABASE: consultation_chat
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+      - ./scripts/init-mongodb.sh:/docker-entrypoint-initdb.d/init-mongodb.sh:ro
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -120,6 +120,15 @@ services:
     networks:
       - healthcare-network
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: healthcare-mailhog
+    ports:
+      - "1025:1025"  # SMTP port
+      - "8025:8025"  # Web UI port
+    networks:
+      - healthcare-network
+
   # Application Services
   user-service:
     build:
@@ -136,11 +145,11 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/user_db
-      SPRING_R2DBC_USERNAME: healthcare_admin
-      SPRING_R2DBC_PASSWORD: healthcare_password
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/user_db
-      SPRING_FLYWAY_USER: healthcare_admin
-      SPRING_FLYWAY_PASSWORD: healthcare_password
+      SPRING_FLYWAY_USER: postgres
+      SPRING_FLYWAY_PASSWORD: postgres
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: redis_password
@@ -170,11 +179,11 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/doctor_db
-      SPRING_R2DBC_USERNAME: healthcare_admin
-      SPRING_R2DBC_PASSWORD: healthcare_password
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/doctor_db
-      SPRING_FLYWAY_USER: healthcare_admin
-      SPRING_FLYWAY_PASSWORD: healthcare_password
+      SPRING_FLYWAY_USER: postgres
+      SPRING_FLYWAY_PASSWORD: postgres
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: redis_password
@@ -223,11 +232,11 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/appointment_db
-      SPRING_R2DBC_USERNAME: healthcare_admin
-      SPRING_R2DBC_PASSWORD: healthcare_password
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/appointment_db
-      SPRING_FLYWAY_USER: healthcare_admin
-      SPRING_FLYWAY_PASSWORD: healthcare_password
+      SPRING_FLYWAY_USER: postgres
+      SPRING_FLYWAY_PASSWORD: postgres
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: redis_password
@@ -245,20 +254,26 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
       kafka:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/payment_db
-      SPRING_R2DBC_USERNAME: healthcare_admin
-      SPRING_R2DBC_PASSWORD: healthcare_password
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/payment_db
-      SPRING_FLYWAY_USER: healthcare_admin
-      SPRING_FLYWAY_PASSWORD: healthcare_password
+      SPRING_FLYWAY_USER: postgres
+      SPRING_FLYWAY_PASSWORD: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis_password
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-test_key}
       RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-test_secret}
       RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET:-test_webhook_secret}
+      MANAGEMENT_HEALTH_REDIS_ENABLED: "false"
     ports:
       - "8085:8085"
     networks:
@@ -272,21 +287,29 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
       kafka:
         condition: service_healthy
+      mailhog:
+        condition: service_started
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/notification_db
-      SPRING_R2DBC_USERNAME: healthcare_admin
-      SPRING_R2DBC_PASSWORD: healthcare_password
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/notification_db
-      SPRING_FLYWAY_USER: healthcare_admin
-      SPRING_FLYWAY_PASSWORD: healthcare_password
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      SPRING_MAIL_HOST: ${MAIL_HOST:-mailhog}
-      SPRING_MAIL_PORT: ${MAIL_PORT:-1025}
-      SPRING_MAIL_USERNAME: ${MAIL_USERNAME:-}
-      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      SPRING_FLYWAY_USER: postgres
+      SPRING_FLYWAY_PASSWORD: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis_password
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      SMTP_USERNAME: ""
+      SMTP_PASSWORD: ""
+      MANAGEMENT_HEALTH_MAIL_ENABLED: "false"
     ports:
       - "8086:8086"
     networks:
@@ -309,11 +332,11 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/consultation_db
-      SPRING_R2DBC_USERNAME: healthcare_admin
-      SPRING_R2DBC_PASSWORD: healthcare_password
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/consultation_db
-      SPRING_FLYWAY_USER: healthcare_admin
-      SPRING_FLYWAY_PASSWORD: healthcare_password
+      SPRING_FLYWAY_USER: postgres
+      SPRING_FLYWAY_PASSWORD: postgres
       SPRING_DATA_MONGODB_URI: mongodb://admin:mongo_password@mongodb:27017/consultation_chat?authSource=admin
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
@@ -344,11 +367,11 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/prescription_db
-      SPRING_R2DBC_USERNAME: healthcare_admin
-      SPRING_R2DBC_PASSWORD: healthcare_password
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/prescription_db
-      SPRING_FLYWAY_USER: healthcare_admin
-      SPRING_FLYWAY_PASSWORD: healthcare_password
+      SPRING_FLYWAY_USER: postgres
+      SPRING_FLYWAY_PASSWORD: postgres
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
@@ -394,6 +417,125 @@ services:
     networks:
       - healthcare-network
 
+  order-service:
+    build:
+      context: ./backend
+      dockerfile: order-service/Dockerfile
+    container_name: healthcare-order-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: order_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      ELASTICSEARCH_URI: http://elasticsearch:9200
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis_password
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      S3_ENDPOINT: http://localstack:4566
+      S3_BUCKET: healthapp-lab-reports
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY: test
+      AWS_SECRET_KEY: test
+      PRESCRIPTION_SERVICE_URL: http://prescription-service:8088
+      PAYMENT_SERVICE_URL: http://payment-service:8085
+      USER_SERVICE_URL: http://user-service:8081
+      EHR_SERVICE_URL: http://ehr-service:8089
+      NOTIFICATION_SERVICE_URL: http://notification-service:8086
+      SERVER_PORT: 8090
+      MANAGEMENT_HEALTH_REDIS_ENABLED: "false"
+    ports:
+      - "8090:8090"
+    networks:
+      - healthcare-network
+
+  review-service:
+    build:
+      context: ./backend
+      dockerfile: review-service/Dockerfile
+    container_name: healthcare-review-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: review_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis_password
+      KAFKA_ENABLED: "true"
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      DOCTOR_SERVICE_URL: http://doctor-service:8082
+      CONSULTATION_SERVICE_URL: http://consultation-service:8087
+      SEARCH_SERVICE_URL: http://search-service:8083
+      SERVER_PORT: 8091
+      MANAGEMENT_HEALTH_REDIS_ENABLED: "false"
+    ports:
+      - "8091:8091"
+    networks:
+      - healthcare-network
+
+  content-service:
+    build:
+      context: ./backend
+      dockerfile: content-service/Dockerfile
+    container_name: healthcare-content-service
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_DATABASE: healthapp_content
+      MONGO_USERNAME: admin
+      MONGO_PASSWORD: mongo_password
+      SPRING_DATA_MONGODB_URI: mongodb://admin:mongo_password@mongodb:27017/healthapp_content?authSource=admin
+      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis_password
+      KAFKA_ENABLED: "true"
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      AWS_S3_ENDPOINT: http://localstack:4566
+      AWS_S3_BUCKET: healthapp-content
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY: test
+      AWS_SECRET_KEY: test
+      JWT_SECRET: your-256-bit-secret-key-for-jwt-signing-here
+      SERVER_PORT: 8092
+    ports:
+      - "8092:8092"
+    networks:
+      - healthcare-network
+
   localstack:
     image: localstack/localstack:3.0
     container_name: healthcare-localstack
@@ -424,6 +566,9 @@ services:
       - consultation-service
       - prescription-service
       - ehr-service
+      - order-service
+      - review-service
+      - content-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATA_REDIS_HOST: redis
@@ -438,6 +583,9 @@ services:
       NOTIFICATION_SERVICE_URL: http://notification-service:8086
       PRESCRIPTION_SERVICE_URL: http://prescription-service:8088
       EHR_SERVICE_URL: http://ehr-service:8089
+      ORDER_SERVICE_URL: http://order-service:8090
+      REVIEW_SERVICE_URL: http://review-service:8091
+      CONTENT_SERVICE_URL: http://content-service:8092
       JWT_SECRET: your-256-bit-secret-key-for-jwt-signing-here
       ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
     ports:

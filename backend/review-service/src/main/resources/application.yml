@@ -1,3 +1,6 @@
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8091}
 spring:
   application:
     name: review-service
@@ -48,10 +51,6 @@ spring:
 jwt:
   secret: ${JWT_SECRET:your-256-bit-secret-key-for-jwt-signing-must-be-at-least-32-chars}
 
-# Server Configuration
-server:
-  port: ${SERVER_PORT:8090}
-
 # Service URLs
 services:
   doctor-service:
@@ -78,6 +77,9 @@ management:
   endpoint:
     health:
       show-details: when_authorized
+  health:
+    redis:
+      enabled: false
   metrics:
     tags:
       application: ${spring.application.name}

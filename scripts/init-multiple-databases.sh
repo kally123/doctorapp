@@ -3,13 +3,20 @@
 set -e
 set -u
 
+
 function create_user_and_database() {
     local database=$1
-    echo "Creating user and database '$database'"
+    echo "Creating database '$database'"
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-        CREATE USER $database WITH ENCRYPTED PASSWORD '$POSTGRES_PASSWORD';
         CREATE DATABASE $database;
-        GRANT ALL PRIVILEGES ON DATABASE $database TO $database;
+        GRANT ALL PRIVILEGES ON DATABASE $database TO postgres;
+EOSQL
+
+    # Grant schema privileges so postgres can create tables
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -d "$database" <<-EOSQL
+        GRANT ALL ON SCHEMA public TO postgres;
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres;
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO postgres;
 EOSQL
 }
 
