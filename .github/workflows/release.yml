@@ -5,6 +5,12 @@ on:
     tags:
       - 'v*'
 
+# Add permissions for GITHUB_TOKEN to push to GHCR and create releases
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
 env:
   REGISTRY: ghcr.io
   IMAGE_PREFIX: ${{ github.repository_owner }}/healthcare
