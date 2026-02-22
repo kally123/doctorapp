@@ -2,6 +2,13 @@ spring:
   application:
     name: user-service-test
 
+  redis:
+    enabled: false
+
+  kafka:
+    enabled: false
+    bootstrap-servers: localhost:9092
+
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/test_db
     username: test_user
@@ -15,8 +22,6 @@ spring:
   flyway:
     enabled: false
 
-  kafka:
-    bootstrap-servers: localhost:9092
 
 logging:
   level:

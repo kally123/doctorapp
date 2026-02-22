@@ -1,7 +1,14 @@
 package com.healthapp.doctor;
+
+import com.healthapp.doctor.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import reactor.kafka.sender.KafkaSender;
+
 @SpringBootTest(
     classes = DoctorServiceApplication.class,
     webEnvironment = SpringBootTest.WebEnvironment.NONE,
@@ -12,11 +19,38 @@ import org.springframework.test.context.ActiveProfiles;
             "org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration," +
             "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration," +
             "org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration," +
-            "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration"
+            "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration",
+        "spring.r2dbc.enabled=false",
+        "spring.cache.redis.enabled=false"
     }
 )
 @ActiveProfiles("test")
 class DoctorServiceApplicationTests {
+
+    @MockBean
+    private DoctorRepository doctorRepository;
+
+    @MockBean
+    private SpecializationRepository specializationRepository;
+
+    @MockBean
+    private QualificationRepository qualificationRepository;
+
+    @MockBean
+    private LanguageRepository languageRepository;
+
+    @MockBean
+    private ClinicRepository clinicRepository;
+
+    @MockBean
+    private R2dbcEntityTemplate r2dbcEntityTemplate;
+
+    @MockBean
+    private ReactiveRedisTemplate<String, Object> reactiveRedisTemplate;
+
+    @MockBean
+    private KafkaSender<String, Object> kafkaSender;
+
     @Test
     void contextLoads() {
         // Basic smoke test to ensure application context loads
