@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Remove 'standalone' for Vercel deployment - it's for Docker/self-hosted only
-  // output: 'standalone',
+  output: 'standalone', // For Docker/self-hosted deployments
   images: {
     remotePatterns: [
       {
@@ -28,3 +27,4 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+

@@ -14,7 +14,8 @@ COPY package*.json ./
 RUN npm ci --prefer-offline --no-audit --progress=false || npm install --prefer-offline --no-audit --progress=false
 
 # Copy configuration files
-COPY next.config.js ./
+# Use Docker-specific config with standalone mode
+COPY next.config.docker.js ./next.config.js
 COPY tsconfig.json ./
 COPY tailwind.config.ts ./
 COPY postcss.config.js ./

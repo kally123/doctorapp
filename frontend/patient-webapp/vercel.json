@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "name": "patient-webapp",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@next_public_api_url"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "https://api.healthcare.example.com"
+    }
+  }
+}
+
