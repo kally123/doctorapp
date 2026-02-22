@@ -9,7 +9,7 @@
 | **End Date** | March 13, 2026 |
 | **Team Size** | 8-10 members |
 | **Goal** | Core infrastructure, authentication, and doctor discovery |
-| **Status** | ✅ **CODE COMPLETE** - See [PHASE1_IMPLEMENTATION_STATUS.md](../PHASE1_IMPLEMENTATION_STATUS.md) |
+| **Status** | ✅ **CODE COMPLETE** - See [PHASE1_IMPLEMENTATION_STATUS.md](../docs/PHASE1_IMPLEMENTATION_STATUS.md) |
 
 ---
 

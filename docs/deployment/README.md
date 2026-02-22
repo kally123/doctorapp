@@ -254,8 +254,8 @@ netlify deploy --prod
 ## 📞 Additional Resources
 
 - **Main README**: [../../README.md](../../README.md)
-- **Architecture Guide**: [../../ARCHITECTURE_INSTRUCTIONS.md](../../ARCHITECTURE_INSTRUCTIONS.md)
-- **Project Plan**: [../../PROJECT_PLAN.md](../../PROJECT_PLAN.md)
+- **Architecture Guide**: [../../ARCHITECTURE_INSTRUCTIONS.md](../ARCHITECTURE_INSTRUCTIONS.md)
+- **Project Plan**: [../../PROJECT_PLAN.md](../PROJECT_PLAN.md)
 - **Deployment Script**: [../../scripts/deploy-oracle-cloud.sh](../../scripts/deploy-oracle-cloud.sh)
 
 ---
