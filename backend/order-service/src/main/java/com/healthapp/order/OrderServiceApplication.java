@@ -2,7 +2,6 @@ package com.healthapp.order;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 
 /**
  * Order Service Application - Commerce module for medicine orders and lab test bookings.
@@ -16,7 +15,6 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
  * - EHR integration for lab reports
  */
 @SpringBootApplication
-@EnableR2dbcRepositories
 public class OrderServiceApplication {
 
     public static void main(String[] args) {

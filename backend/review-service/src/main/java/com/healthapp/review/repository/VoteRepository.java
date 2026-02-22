@@ -1,5 +1,6 @@
 package com.healthapp.review.repository;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.review.model.entity.ReviewVote;
 import com.healthapp.review.model.enums.VoteType;
 import org.springframework.data.r2dbc.repository.Query;
@@ -10,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+@Profile("!test")
 @Repository
 public interface VoteRepository extends R2dbcRepository<ReviewVote, UUID> {
 

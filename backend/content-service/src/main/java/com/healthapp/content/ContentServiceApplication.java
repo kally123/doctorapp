@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
-import org.springframework.data.mongodb.config.EnableReactiveMongoAuditing;
 
 @SpringBootApplication(exclude = {
         R2dbcAutoConfiguration.class,
@@ -14,7 +13,6 @@ import org.springframework.data.mongodb.config.EnableReactiveMongoAuditing;
         DataSourceTransactionManagerAutoConfiguration.class,
         FlywayAutoConfiguration.class
 })
-@EnableReactiveMongoAuditing
 public class ContentServiceApplication {
 
     public static void main(String[] args) {

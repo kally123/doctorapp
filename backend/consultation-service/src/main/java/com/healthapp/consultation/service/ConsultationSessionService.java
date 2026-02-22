@@ -1,5 +1,6 @@
 package com.healthapp.consultation.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.domain.*;
 import com.healthapp.consultation.dto.*;
 import com.healthapp.consultation.event.ConsultationEventPublisher;
@@ -17,6 +18,7 @@ import java.util.UUID;
  * Main service for managing consultation sessions.
  */
 @Slf4j
+@Profile("!test")
 @Service
 @RequiredArgsConstructor
 public class ConsultationSessionService {

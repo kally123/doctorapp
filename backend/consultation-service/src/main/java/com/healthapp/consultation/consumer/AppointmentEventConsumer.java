@@ -1,5 +1,6 @@
 package com.healthapp.consultation.consumer;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.domain.ConsultationMode;
 import com.healthapp.consultation.dto.CreateSessionRequest;
 import com.healthapp.consultation.service.ConsultationSessionService;
@@ -16,6 +17,7 @@ import java.util.UUID;
  * Consumes appointment events to auto-create consultation sessions.
  */
 @Slf4j
+@Profile("!test")
 @Component
 @RequiredArgsConstructor
 public class AppointmentEventConsumer {

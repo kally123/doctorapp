@@ -13,6 +13,7 @@ import com.healthapp.search.model.dto.*;
 import com.healthapp.search.repository.DoctorSearchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -22,9 +23,11 @@ import java.util.stream.Collectors;
 
 /**
  * Service for doctor search operations using Elasticsearch.
+ * Disabled in test profile to avoid requiring Elasticsearch during tests.
  */
 @Slf4j
 @Service
+@Profile("!test")
 @RequiredArgsConstructor
 public class DoctorSearchService {
     

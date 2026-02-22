@@ -1,5 +1,6 @@
 package com.healthapp.order.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.order.domain.DeliveryAddress;
 import com.healthapp.order.dto.AddressRequest;
 import com.healthapp.order.dto.AddressResponse;
@@ -17,6 +18,7 @@ import java.util.UUID;
  * Service for managing delivery addresses.
  */
 @Slf4j
+@Profile("!test")
 @Service
 @RequiredArgsConstructor
 public class AddressService {

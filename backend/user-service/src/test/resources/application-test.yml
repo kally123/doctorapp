@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: user-service-test
+
+  redis:
+    enabled: false
+
+  kafka:
+    enabled: false
+    bootstrap-servers: localhost:9092
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/test_db
+    username: test_user
+    password: test_password
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  flyway:
+    enabled: false
+
+
+logging:
+  level:
+    root: WARN
+    com.healthapp: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+

@@ -6,6 +6,7 @@ import com.healthapp.prescription.repository.MedicineCacheRepository;
 import com.healthapp.prescription.repository.MedicineSearchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.query.Criteria;
@@ -16,9 +17,11 @@ import reactor.core.publisher.Mono;
 
 /**
  * Service for medicine search using Elasticsearch with fallback to local cache.
+ * Disabled in test profile to avoid requiring Elasticsearch during tests.
  */
 @Slf4j
 @Service
+@Profile("!test")
 @RequiredArgsConstructor
 public class MedicineSearchService {
 

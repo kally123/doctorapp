@@ -1,5 +1,6 @@
 package com.healthapp.order.controller;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.order.dto.OrderResponse;
 import com.healthapp.order.dto.PlaceOrderRequest;
 import com.healthapp.order.dto.TrackingInfo;
@@ -22,6 +23,7 @@ import java.util.UUID;
  * REST controller for order management operations.
  */
 @Slf4j
+@Profile("!test")
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor

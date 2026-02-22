@@ -11,8 +11,8 @@ import com.healthapp.user.model.entity.User;
 import com.healthapp.user.model.entity.UserRole;
 import com.healthapp.user.model.entity.UserStatus;
 import com.healthapp.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,6 @@ import java.util.UUID;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class UserService {
     
     private final UserRepository userRepository;
@@ -34,8 +33,20 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final OtpService otpService;
     private final TokenService tokenService;
-    private final UserEventPublisher eventPublisher;
-    
+
+    @Autowired(required = false)
+    private UserEventPublisher eventPublisher;
+
+    public UserService(UserRepository userRepository, UserMapper userMapper,
+                       PasswordEncoder passwordEncoder, OtpService otpService,
+                       TokenService tokenService) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.otpService = otpService;
+        this.tokenService = tokenService;
+    }
+
     /**
      * Registers a new user.
      */
@@ -63,7 +74,11 @@ public class UserService {
                             .flatMap(otp -> otpService.sendOtp(identifier, otp))
                             .thenReturn(user);
                 })
-                .doOnSuccess(user -> eventPublisher.publishUserRegistered(user))
+                .doOnSuccess(user -> {
+                    if (eventPublisher != null) {
+                        eventPublisher.publishUserRegistered(user);
+                    }
+                })
                 .map(user -> RegisterResponse.builder()
                         .userId(user.getId().toString())
                         .email(user.getEmail())
@@ -101,7 +116,11 @@ public class UserService {
                                 return userRepository.save(user);
                             });
                 })
-                .doOnSuccess(user -> eventPublisher.publishUserVerified(user))
+                .doOnSuccess(user -> {
+                    if (eventPublisher != null) {
+                        eventPublisher.publishUserVerified(user);
+                    }
+                })
                 .flatMap(user -> tokenService.generateTokens(user)
                         .map(tokens -> LoginResponse.of(tokens, userMapper.toDto(user))));
     }
@@ -130,7 +149,11 @@ public class UserService {
                     user.setLastLoginAt(Instant.now());
                     return userRepository.save(user);
                 })
-                .doOnSuccess(user -> eventPublisher.publishUserLogin(user))
+                .doOnSuccess(user -> {
+                    if (eventPublisher != null) {
+                        eventPublisher.publishUserLogin(user);
+                    }
+                })
                 .flatMap(user -> tokenService.generateTokens(user)
                         .map(tokens -> LoginResponse.of(tokens, userMapper.toDto(user))));
     }
@@ -204,7 +227,11 @@ public class UserService {
                     user.setUpdatedAt(Instant.now());
                     return userRepository.save(user);
                 })
-                .doOnSuccess(user -> eventPublisher.publishUserUpdated(user))
+                .doOnSuccess(user -> {
+                    if (eventPublisher != null) {
+                        eventPublisher.publishUserUpdated(user);
+                    }
+                })
                 .map(userMapper::toDto);
     }
     

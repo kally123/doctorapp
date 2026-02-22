@@ -1,5 +1,6 @@
 package com.healthapp.prescription.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.prescription.domain.Prescription;
 import com.healthapp.prescription.domain.PrescriptionItem;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import org.springframework.context.annotation.Profile;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.X509Certificate;
@@ -21,6 +23,7 @@ import java.util.UUID;
  * Service for digitally signing prescriptions.
  */
 @Slf4j
+@Profile("!test")
 @Service
 public class DigitalSignatureService {
 

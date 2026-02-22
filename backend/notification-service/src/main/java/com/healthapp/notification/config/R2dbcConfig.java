@@ -1,6 +1,7 @@
 package com.healthapp.notification.config;
 
 import io.r2dbc.spi.ConnectionFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.r2dbc.config.EnableR2dbcAuditing;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableR2dbcRepositories(basePackages = "com.healthapp.notification.repository")
 @EnableR2dbcAuditing
 @EnableTransactionManagement
+@ConditionalOnProperty(name = "spring.r2dbc.enabled", havingValue = "true", matchIfMissing = true)
 public class R2dbcConfig {
     
     @Bean

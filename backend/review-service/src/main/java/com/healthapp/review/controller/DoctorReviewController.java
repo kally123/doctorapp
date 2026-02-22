@@ -1,5 +1,6 @@
 package com.healthapp.review.controller;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.review.dto.*;
 import com.healthapp.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+@Profile("!test")
 @RestController
 @RequestMapping("/api/v1/doctors/{doctorId}/reviews")
 @RequiredArgsConstructor

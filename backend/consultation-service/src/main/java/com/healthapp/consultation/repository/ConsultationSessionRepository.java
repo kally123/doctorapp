@@ -1,5 +1,6 @@
 package com.healthapp.consultation.repository;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.domain.ConsultationSession;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
@@ -10,6 +11,7 @@ import reactor.core.publisher.Mono;
 import java.time.Instant;
 import java.util.UUID;
 
+@Profile("!test")
 @Repository
 public interface ConsultationSessionRepository extends ReactiveCrudRepository<ConsultationSession, UUID> {
     

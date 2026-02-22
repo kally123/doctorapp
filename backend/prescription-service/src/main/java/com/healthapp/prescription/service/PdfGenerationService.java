@@ -1,5 +1,6 @@
 package com.healthapp.prescription.service;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.prescription.domain.Prescription;
 import com.healthapp.prescription.domain.PrescriptionItem;
 import com.healthapp.prescription.dto.PrescriptionResponse.DoctorInfo;
@@ -20,6 +21,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
+import org.springframework.context.annotation.Profile;
 import java.io.ByteArrayOutputStream;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -31,6 +33,7 @@ import java.util.UUID;
  * Service for generating prescription PDFs.
  */
 @Slf4j
+@Profile("!test")
 @Service
 @RequiredArgsConstructor
 public class PdfGenerationService {
@@ -170,7 +173,7 @@ public class PdfGenerationService {
         }
         
         // Medicines Table
-        html.append("<div class='section-title'><span class='rx-symbol'>℞</span> Medicines</div>");
+        html.append("<div class='section-title'><span class='rx-symbol'>Ã¢â€žÅ¾</span> Medicines</div>");
         html.append("<table>");
         html.append("<tr><th>#</th><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Instructions</th></tr>");
         

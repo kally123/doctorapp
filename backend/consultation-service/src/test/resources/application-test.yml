@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: consultation-service-test
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/test_db
+    username: test_user
+    password: test_password
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  flyway:
+    enabled: false
+
+logging:
+  level:
+    root: WARN
+    com.healthapp: INFO

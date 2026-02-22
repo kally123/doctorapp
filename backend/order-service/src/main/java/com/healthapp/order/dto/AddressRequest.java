@@ -2,7 +2,6 @@ package com.healthapp.order.dto;
 
 import com.healthapp.order.domain.enums.AddressType;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;

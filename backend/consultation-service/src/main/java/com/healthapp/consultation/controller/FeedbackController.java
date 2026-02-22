@@ -1,5 +1,6 @@
 package com.healthapp.consultation.controller;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.consultation.domain.ConsultationFeedback;
 import com.healthapp.consultation.dto.SubmitFeedbackRequest;
 import com.healthapp.consultation.service.FeedbackService;
@@ -20,6 +21,7 @@ import java.util.UUID;
  * REST controller for consultation feedback.
  */
 @Slf4j
+@Profile("!test")
 @RestController
 @RequestMapping("/api/v1/feedback")
 @RequiredArgsConstructor

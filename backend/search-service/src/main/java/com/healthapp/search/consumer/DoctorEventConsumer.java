@@ -6,6 +6,7 @@ import com.healthapp.search.model.DoctorDocument;
 import com.healthapp.search.service.DoctorSearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +16,11 @@ import java.util.Map;
 
 /**
  * Kafka consumer for doctor events to keep search index in sync.
+ * Disabled in test profile to avoid requiring Kafka and Elasticsearch during tests.
  */
 @Slf4j
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class DoctorEventConsumer {
     

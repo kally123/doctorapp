@@ -61,7 +61,6 @@ public class HealthDashboardController {
     @Value("${REVIEW_SERVICE_URL:http://localhost:8091}")
     private String reviewServiceUrl;
 
-
     private final WebClient webClient;
 
     public HealthDashboardController() {

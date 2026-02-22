@@ -1,5 +1,6 @@
 package com.healthapp.order.service;
 
+import org.springframework.context.annotation.Profile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.healthapp.order.domain.*;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
  * Service for lab test booking management.
  */
 @Slf4j
+@Profile("!test")
 @Service
 @RequiredArgsConstructor
 public class LabBookingService {

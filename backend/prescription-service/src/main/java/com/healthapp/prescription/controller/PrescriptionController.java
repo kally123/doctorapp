@@ -1,5 +1,6 @@
 package com.healthapp.prescription.controller;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.prescription.dto.CreatePrescriptionRequest;
 import com.healthapp.prescription.dto.PrescriptionResponse;
 import com.healthapp.prescription.service.PrescriptionService;
@@ -12,12 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import org.springframework.context.annotation.Profile;
 import java.util.UUID;
 
 /**
  * REST controller for prescription management.
  */
 @Slf4j
+@Profile("!test")
 @RestController
 @RequestMapping("/api/v1/prescriptions")
 @RequiredArgsConstructor

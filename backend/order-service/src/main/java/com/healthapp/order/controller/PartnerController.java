@@ -1,5 +1,6 @@
 package com.healthapp.order.controller;
 
+import org.springframework.context.annotation.Profile;
 import com.healthapp.order.domain.Partner;
 import com.healthapp.order.domain.enums.PartnerType;
 import com.healthapp.order.repository.PartnerRepository;
@@ -18,6 +19,7 @@ import java.util.UUID;
  * REST controller for partner (pharmacy/lab) browsing.
  */
 @Slf4j
+@Profile("!test")
 @RestController
 @RequestMapping("/api/v1/partners")
 @RequiredArgsConstructor

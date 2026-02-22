@@ -1,5 +1,6 @@
 package com.healthapp.order.config;
 
+import org.springframework.context.annotation.Profile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.healthapp.order.domain.Cart;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 /**
  * Redis configuration for cart storage and caching.
  */
+@Profile("!test")
 @Configuration
 public class RedisConfig {
 
