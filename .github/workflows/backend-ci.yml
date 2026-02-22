@@ -19,7 +19,11 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
     services:
       postgres:
         image: postgres:15-alpine
