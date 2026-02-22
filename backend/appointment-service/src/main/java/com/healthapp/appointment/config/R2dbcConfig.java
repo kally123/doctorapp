@@ -1,6 +1,7 @@
 package com.healthapp.appointment.config;
 
 import io.r2dbc.spi.ConnectionFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -15,6 +16,7 @@ import java.util.List;
 @Configuration
 @EnableR2dbcRepositories(basePackages = "com.healthapp.appointment.repository")
 @EnableR2dbcAuditing
+@ConditionalOnProperty(name = "spring.r2dbc.enabled", havingValue = "true", matchIfMissing = true)
 public class R2dbcConfig {
     
     @Bean
