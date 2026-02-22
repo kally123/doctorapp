@@ -608,19 +608,19 @@ services:
     networks:
       - healthcare-network
 
-#  doctor-dashboard:
-#    build:
-#      context: ./frontend/doctor-dashboard
-#      dockerfile: Dockerfile
-#    container_name: healthcare-doctor-dashboard
-#    depends_on:
-#      - api-gateway
-#    environment:
-#      VITE_API_URL: http://localhost:8080/api
-#    ports:
-#      - "5173:80"
-#    networks:
-#      - healthcare-network
+  doctor-dashboard:
+    build:
+      context: ./frontend/doctor-dashboard
+      dockerfile: Dockerfile
+    container_name: healthcare-doctor-dashboard
+    depends_on:
+      - api-gateway
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+    ports:
+      - "5173:80"
+    networks:
+      - healthcare-network
 
 volumes:
   postgres_data:

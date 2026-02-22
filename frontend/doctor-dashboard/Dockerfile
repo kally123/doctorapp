@@ -6,7 +6,7 @@ WORKDIR /app
 RUN npm config set registry https://registry.npmjs.org/ && \
     npm config set fetch-retries 5 && \
     npm config set fetch-retry-mintimeout 20000 && \
-    npm config set fetch-retry-maxtimeout 120000/
+    npm config set fetch-retry-maxtimeout 120000
 
 # Copy package files
 COPY package*.json ./
@@ -15,7 +15,7 @@ COPY package*.json ./
 RUN npm ci --prefer-offline --no-audit --progress=false || npm install --prefer-offline --no-audit --progress=false
 
 # Copy configuration files
-COPY next.config.js ./
+COPY vite.config.ts ./
 COPY tsconfig.json ./
 COPY tailwind.config.ts ./
 COPY postcss.config.js ./
@@ -23,6 +23,9 @@ COPY postcss.config.js ./
 # Copy source code
 COPY src ./src
 COPY public ./public
+
+# Build the application
+RUN npm run build
 
 # Production stage
 FROM nginx:alpine
