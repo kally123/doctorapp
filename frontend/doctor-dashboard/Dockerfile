@@ -17,8 +17,10 @@ RUN npm ci --prefer-offline --no-audit --progress=false || npm install --prefer-
 # Copy configuration files
 COPY vite.config.ts ./
 COPY tsconfig.json ./
+COPY tsconfig.node.json ./
 COPY tailwind.config.ts ./
 COPY postcss.config.js ./
+COPY index.html ./
 
 # Copy source code
 COPY src ./src
