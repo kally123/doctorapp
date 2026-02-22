@@ -34,7 +34,9 @@ jobs:
           cache-dependency-path: frontend/patient-webapp/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npx next --version
 
       - name: Run linting
         run: npm run lint
@@ -78,7 +80,9 @@ jobs:
           cache-dependency-path: frontend/doctor-dashboard/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npx vite --version
 
       - name: Run linting
         run: npm run lint
